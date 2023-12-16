@@ -308,7 +308,7 @@ fun PromoField(
 }
 
 @Composable
-fun TopShadow(alpha: Float = 0.1f, height: Dp = 8.dp) {
+fun TopShadow(alpha: Float = 1f, height: Dp = 8.dp) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
