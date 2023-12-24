@@ -1,5 +1,8 @@
 package com.example.alp_vp_dev1.view
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,10 +51,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarConfig
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.maxkeppeler.sheets.clock.ClockDialog
+import com.maxkeppeler.sheets.clock.models.ClockConfig
+import com.maxkeppeler.sheets.clock.models.ClockSelection
+import java.time.Clock
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OfferRideView(){
+fun OfferRideView() {
+
 
     var standbyPoint by rememberSaveable { mutableStateOf("") }
     var destination by rememberSaveable { mutableStateOf("") }
@@ -95,10 +108,34 @@ fun OfferRideView(){
         Icons.Filled.KeyboardArrowDown
     }
 
+    val calendarState = rememberSheetState()
+    CalendarDialog(
+        state = calendarState,
+        config = CalendarConfig(
+            monthSelection = true,
+            yearSelection = true
+        ),
+        selection = CalendarSelection.Date { date ->
+            selectedDate = date.toString()
+            Log.d("Selected date : ", "$date")
+        }
+    )
+
+    val clockState = rememberSheetState()
+    ClockDialog(
+        state = clockState,
+        config = ClockConfig(
+            is24HourFormat = true
+        ),
+        selection = ClockSelection.HoursMinutes { hours, minutes ->
+            selectedTime = "$hours:$minutes"
+        }
+    )
+
     Column(
         modifier = Modifier
             .background(Color(0xFFD0FF00))
-    ){
+    ) {
         Icon(
             modifier = Modifier
                 .padding(start = 25.dp, top = 25.dp, end = 25.dp),
@@ -120,7 +157,7 @@ fun OfferRideView(){
                 .padding(top = 50.dp)
                 .fillMaxWidth()
                 .background(Color(0XFFFFFFFF), RoundedCornerShape(25.dp, 25.dp, 0.dp, 0.dp))
-        ){
+        ) {
             Text(
                 modifier = Modifier
                     .padding(start = 24.dp, top = 28.dp)
@@ -135,10 +172,10 @@ fun OfferRideView(){
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
                 value = standbyPoint,
-                onValueChanged = {standbyPoint = it},
+                onValueChanged = { standbyPoint = it },
                 text = "Your address point ...",
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
+                    keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 )
             )
@@ -157,10 +194,10 @@ fun OfferRideView(){
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
                 value = destination,
-                onValueChanged = {destination = it},
+                onValueChanged = { destination = it },
                 text = "Your destination ...",
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
+                    keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 )
             )
@@ -178,14 +215,15 @@ fun OfferRideView(){
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 Column(
                     modifier = Modifier
                         .padding(start = 24.dp, top = 8.dp)
-                ){
+                ) {
                     OutlinedTextField(
                         modifier = Modifier
-                            .width(160.dp),
+                            .width(160.dp)
+                            .clickable { calendarState.show() },
                         value = selectedDate,
                         onValueChange = { selectedDate = it },
                         label = { Text(text = "Date") },
@@ -197,24 +235,33 @@ fun OfferRideView(){
                                     .clickable { expandedDate = !expandedDate }
                             )
                         },
+                        enabled = false,
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Color(0xFFD0FF00),
-                            unfocusedBorderColor = Color(0xFFD0FF00)
+                            unfocusedBorderColor = Color(0xFFD0FF00),
+                            disabledBorderColor = Color(0xFFD0FF00),
+                            disabledLabelColor = Color(0xFF333138),
+                            textColor = Color(0xFF000103),
+                            placeholderColor = Color(0xFF000103)
                         ),
                         shape = RoundedCornerShape(15.dp)
                     )
-                    
+
                     DropdownMenu(
                         expanded = expandedDate,
                         onDismissRequest = { expandedDate = false },
                         modifier = Modifier
-                            .width(with(LocalDensity.current){textFieldSize.width.toDp()})
+                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                             .background(Color(0x33D0FF00))
+                            .clickable {
+                                expandedDate = true
+                            }
                     ) {
                         list.forEach {
                             DropdownMenuItem(text = { Text(text = it) }, onClick = {
                                 selectedDate = it
-                                expandedDate = false }
+                                expandedDate = false
+                            }
                             )
                         }
                     }
@@ -223,10 +270,11 @@ fun OfferRideView(){
                 Column(
                     modifier = Modifier
                         .padding(end = 24.dp, top = 8.dp, bottom = 8.dp)
-                ){
+                ) {
                     OutlinedTextField(
                         modifier = Modifier
-                            .width(160.dp),
+                            .width(160.dp)
+                            .clickable { clockState.show() },
                         value = selectedTime,
                         onValueChange = { selectedTime = it },
                         label = { Text(text = "Time") },
@@ -238,9 +286,14 @@ fun OfferRideView(){
                                     .clickable { expandedTime = !expandedTime }
                             )
                         },
+                        enabled = false,
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Color(0xFFD0FF00),
-                            unfocusedBorderColor = Color(0xFFD0FF00)
+                            unfocusedBorderColor = Color(0xFFD0FF00),
+                            disabledBorderColor = Color(0xFFD0FF00),
+                            disabledLabelColor = Color(0xFF333138),
+                            textColor = Color(0xFF000103),
+                            placeholderColor = Color(0xFF000103)
                         ),
                         shape = RoundedCornerShape(15.dp)
                     )
@@ -249,13 +302,14 @@ fun OfferRideView(){
                         expanded = expandedTime,
                         onDismissRequest = { expandedTime = false },
                         modifier = Modifier
-                            .width(with(LocalDensity.current){textFieldSize.width.toDp()})
+                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                             .background(Color(0x33D0FF00))
                     ) {
                         list.forEach {
                             DropdownMenuItem(text = { Text(text = it) }, onClick = {
                                 selectedTime = it
-                                expandedTime = false }
+                                expandedTime = false
+                            }
                             )
                         }
                     }
@@ -266,7 +320,7 @@ fun OfferRideView(){
                 modifier = Modifier
                     .padding(start = 18.dp, top = 24.dp)
                     .fillMaxWidth(),
-                text = "Car Type & Capacity",
+                text = "Notes & Car Capacity",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
@@ -275,25 +329,25 @@ fun OfferRideView(){
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 Column(
                     modifier = Modifier
                         .padding(start = 24.dp, top = 8.dp)
-                ){
+                ) {
                     OutlinedTextField(
                         modifier = Modifier
-                            .width(220.dp),
+                            .width(200.dp),
                         value = selectedType,
                         onValueChange = { selectedType = it },
-                        label = { Text(text = "Car Type") },
-                        trailingIcon = {
-                            Icon(
-                                iconType,
-                                contentDescription = "arrow",
-                                modifier = Modifier
-                                    .clickable { expandedType = !expandedType }
-                            )
-                        },
+                        label = { Text(text = "Notes") },
+//                        trailingIcon = {
+//                            Icon(
+//                                iconType,
+//                                contentDescription = "arrow",
+//                                modifier = Modifier
+//                                    .clickable { expandedType = !expandedType }
+//                            )
+//                        },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Color(0xFFD0FF00),
                             unfocusedBorderColor = Color(0xFFD0FF00)
@@ -305,13 +359,14 @@ fun OfferRideView(){
                         expanded = expandedType,
                         onDismissRequest = { expandedType = false },
                         modifier = Modifier
-                            .width(with(LocalDensity.current){textFieldSize.width.toDp()})
+                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                             .background(Color(0x33D0FF00))
                     ) {
                         list.forEach {
                             DropdownMenuItem(text = { Text(text = it) }, onClick = {
                                 selectedType = it
-                                expandedType = false }
+                                expandedType = false
+                            }
                             )
                         }
                     }
@@ -320,39 +375,44 @@ fun OfferRideView(){
                 Column(
                     modifier = Modifier
                         .padding(end = 24.dp, top = 8.dp)
-                ){
+                ) {
                     OutlinedTextField(
                         modifier = Modifier
-                            .width(100.dp),
+                            .width(120.dp),
                         value = selectedCapacity,
                         onValueChange = { selectedCapacity = it },
-                        label = { Text(text = "1") },
-                        trailingIcon = {
-                            Icon(
-                                iconCapacity,
-                                contentDescription = "arrow",
-                                modifier = Modifier
-                                    .clickable { expandedCapacity = !expandedCapacity }
-                            )
-                        },
+                        label = { Text(text = "Person") },
+//                        trailingIcon = {
+//                            Icon(
+//                                iconCapacity,
+//                                contentDescription = "arrow",
+//                                modifier = Modifier
+//                                    .clickable { expandedCapacity = !expandedCapacity }
+//                            )
+//                        },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Color(0xFFD0FF00),
                             unfocusedBorderColor = Color(0xFFD0FF00)
                         ),
-                        shape = RoundedCornerShape(15.dp)
+                        shape = RoundedCornerShape(15.dp),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Next
+                        )
                     )
 
                     DropdownMenu(
                         expanded = expandedCapacity,
                         onDismissRequest = { expandedCapacity = false },
                         modifier = Modifier
-                            .width(with(LocalDensity.current){textFieldSize.width.toDp()})
+                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                             .background(Color(0x33D0FF00))
                     ) {
                         list.forEach {
                             DropdownMenuItem(text = { Text(text = it) }, onClick = {
                                 selectedCapacity = it
-                                expandedCapacity = false }
+                                expandedCapacity = false
+                            }
                             )
                         }
                     }
@@ -365,12 +425,12 @@ fun OfferRideView(){
                 modifier = Modifier
                     .padding(top = 40.dp)
                     .fillMaxSize()
-            ){
+            ) {
                 TopShadow(alpha = .15f, height = 18.dp)
 
                 Button(
                     modifier = Modifier
-                        .padding(24.dp, 24.dp)
+                        .padding(24.dp, 26.dp)
                         .fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00)),
                     onClick = { /*TODO*/ }
@@ -378,7 +438,7 @@ fun OfferRideView(){
                     Text(
                         text = "Offer Ride",
                         color = Color.Black,
-                        fontSize = 16.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -410,8 +470,9 @@ fun AddressField(
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun OfferRidePreview(){
+fun OfferRidePreview() {
     OfferRideView()
 }
