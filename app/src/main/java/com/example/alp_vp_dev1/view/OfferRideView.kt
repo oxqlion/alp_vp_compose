@@ -4,7 +4,6 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,32 +15,28 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardBackspace
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.readable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -50,63 +45,29 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.alp_vp_dev1.viewmodel.OfferRideViewModel
 import androidx.compose.ui.unit.toSize
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.maxkeppeler.sheets.calendar.models.CalendarStyle
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockConfig
 import com.maxkeppeler.sheets.clock.models.ClockSelection
+import java.time.LocalDate
 import java.time.Clock
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OfferRideView() {
+fun OfferRideView(
+    offerRideViewModel: OfferRideViewModel = viewModel()
+){
+    val offerRideUiState by offerRideViewModel.uiState.collectAsState()
 
-
-    var standbyPoint by rememberSaveable { mutableStateOf("") }
-    var destination by rememberSaveable { mutableStateOf("") }
-
-    val list = listOf("date", "date2")
-    var textFieldSize by remember { mutableStateOf(Size.Zero) }
-
-    var expandedDate by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf("") }
-
-    var expandedTime by remember { mutableStateOf(false) }
-    var selectedTime by remember { mutableStateOf("") }
-
-    var expandedType by remember { mutableStateOf(false) }
-    var selectedType by remember { mutableStateOf("") }
-
-    var expandedCapacity by remember { mutableStateOf(false) }
-    var selectedCapacity by remember { mutableStateOf("") }
-
-    val iconDate = if (expandedDate) {
-        Icons.Filled.KeyboardArrowUp
-    } else {
-        Icons.Filled.KeyboardArrowDown
-    }
-
-    val iconTime = if (expandedTime) {
-        Icons.Filled.KeyboardArrowUp
-    } else {
-        Icons.Filled.KeyboardArrowDown
-    }
-
-    val iconType = if (expandedTime) {
-        Icons.Filled.KeyboardArrowUp
-    } else {
-        Icons.Filled.KeyboardArrowDown
-    }
-
-    val iconCapacity = if (expandedTime) {
-        Icons.Filled.KeyboardArrowUp
-    } else {
-        Icons.Filled.KeyboardArrowDown
-    }
+    val textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     val calendarState = rememberSheetState()
     CalendarDialog(
@@ -167,12 +128,12 @@ fun OfferRideView() {
                 fontSize = 16.sp
             )
 
-            AddressField(
+            offerRideViewModel.AddressField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
-                value = standbyPoint,
-                onValueChanged = { standbyPoint = it },
+                value = offerRideUiState.standbyPoint,
+                onValueChanged = {offerRideUiState.standbyPoint = it},
                 text = "Your address point ...",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
@@ -189,12 +150,12 @@ fun OfferRideView() {
                 fontSize = 16.sp
             )
 
-            AddressField(
+            offerRideViewModel.AddressField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
-                value = destination,
-                onValueChanged = { destination = it },
+                value = offerRideUiState.destination,
+                onValueChanged = {offerRideUiState.destination = it},
                 text = "Your destination ...",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
@@ -215,6 +176,81 @@ fun OfferRideView() {
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
+            ){
+                DateTime()
+
+//                    OutlinedTextField(
+//                        modifier = Modifier
+//                            .width(160.dp),
+//                        value = offerRideUiState.selectedDate,
+//                        onValueChange = { offerRideUiState.selectedDate = it },
+//                        label = { Text(text = "Date") },
+//                        trailingIcon = {
+//                            Icon(
+//                                offerRideUiState.iconDate,
+//                                contentDescription = "arrow",
+//                                modifier = Modifier
+//                                    .clickable { offerRideUiState.expandedDate = !offerRideUiState.expandedDate }
+//                            )
+//                        },
+//                        colors = TextFieldDefaults.outlinedTextFieldColors(
+//                            focusedBorderColor = Color(0xFFD0FF00),
+//                            unfocusedBorderColor = Color(0xFFD0FF00)
+//                        ),
+//                        shape = RoundedCornerShape(15.dp)
+//                    )
+//
+//                    DropdownMenu(
+//                        expanded = offerRideUiState.expandedDate,
+//                        onDismissRequest = { offerRideUiState.expandedDate = false },
+//                        modifier = Modifier
+//                            .width(with(LocalDensity.current){textFieldSize.width.toDp()})
+//                            .background(Color(0x33D0FF00))
+//                    ) {
+//                        offerRideViewModel.list.forEach {
+//                            DropdownMenuItem(text = { Text(text = it) }, onClick = {
+//                                offerRideUiState.selectedDate = it
+//                                offerRideUiState.expandedDate = false }
+//                            )
+//                        }
+//                    }
+
+//                    OutlinedTextField(
+//                        modifier = Modifier
+//                            .width(160.dp),
+//                        value = offerRideUiState.selectedTime,
+//                        onValueChange = { offerRideUiState.selectedTime = it },
+//                        label = { Text(text = "Time") },
+//                        trailingIcon = {
+//                            Icon(
+//                                offerRideUiState.iconTime,
+//                                contentDescription = "arrow",
+//                                modifier = Modifier
+//                                    .clickable { offerRideUiState.expandedTime = !offerRideUiState.expandedTime }
+//                            )
+//                        },
+//                        colors = TextFieldDefaults.outlinedTextFieldColors(
+//                            focusedBorderColor = Color(0xFFD0FF00),
+//                            unfocusedBorderColor = Color(0xFFD0FF00)
+//                        ),
+//                        shape = RoundedCornerShape(15.dp)
+//                    )
+//
+//                    DropdownMenu(
+//                        expanded = offerRideUiState.expandedTime,
+//                        onDismissRequest = { offerRideUiState.expandedTime = false },
+//                        modifier = Modifier
+//                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+//                            .background(Color(0x33D0FF00))
+//                    ) {
+//                        offerRideViewModel.list.forEach {
+//                            DropdownMenuItem(text = { Text(text = it) }, onClick = {
+//                                offerRideUiState.selectedTime = it
+//                                offerRideUiState.expandedTime = false }
+//                            )
+//                        }
+//                    }
+
             ) {
                 Column(
                     modifier = Modifier
@@ -336,18 +372,18 @@ fun OfferRideView() {
                 ) {
                     OutlinedTextField(
                         modifier = Modifier
-                            .width(200.dp),
-                        value = selectedType,
-                        onValueChange = { selectedType = it },
-                        label = { Text(text = "Notes") },
-//                        trailingIcon = {
-//                            Icon(
-//                                iconType,
-//                                contentDescription = "arrow",
-//                                modifier = Modifier
-//                                    .clickable { expandedType = !expandedType }
-//                            )
-//                        },
+                            .width(220.dp),
+                        value = offerRideUiState.selectedType,
+                        onValueChange = { offerRideUiState.selectedType = it },
+                        label = { Text(text = "Car Type") },
+                        trailingIcon = {
+                            Icon(
+                                offerRideUiState.iconType,
+                                contentDescription = "arrow",
+                                modifier = Modifier
+                                    .clickable { offerRideUiState.expandedType = !offerRideUiState.expandedType }
+                            )
+                        },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Color(0xFFD0FF00),
                             unfocusedBorderColor = Color(0xFFD0FF00)
@@ -356,17 +392,16 @@ fun OfferRideView() {
                     )
 
                     DropdownMenu(
-                        expanded = expandedType,
-                        onDismissRequest = { expandedType = false },
+                        expanded = offerRideUiState.expandedType,
+                        onDismissRequest = { offerRideUiState.expandedType = false },
                         modifier = Modifier
                             .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                             .background(Color(0x33D0FF00))
                     ) {
-                        list.forEach {
+                        offerRideViewModel.list.forEach {
                             DropdownMenuItem(text = { Text(text = it) }, onClick = {
-                                selectedType = it
-                                expandedType = false
-                            }
+                                offerRideUiState.selectedType = it
+                                offerRideUiState.expandedType = false }
                             )
                         }
                     }
@@ -378,18 +413,18 @@ fun OfferRideView() {
                 ) {
                     OutlinedTextField(
                         modifier = Modifier
-                            .width(120.dp),
-                        value = selectedCapacity,
-                        onValueChange = { selectedCapacity = it },
-                        label = { Text(text = "Person") },
-//                        trailingIcon = {
-//                            Icon(
-//                                iconCapacity,
-//                                contentDescription = "arrow",
-//                                modifier = Modifier
-//                                    .clickable { expandedCapacity = !expandedCapacity }
-//                            )
-//                        },
+                            .width(100.dp),
+                        value = offerRideUiState.selectedCapacity,
+                        onValueChange = { offerRideUiState.selectedCapacity = it },
+                        label = { Text(text = "1") },
+                        trailingIcon = {
+                            Icon(
+                                offerRideUiState.iconCapacity,
+                                contentDescription = "arrow",
+                                modifier = Modifier
+                                    .clickable { offerRideUiState.expandedCapacity = !offerRideUiState.expandedCapacity }
+                            )
+                        },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             focusedBorderColor = Color(0xFFD0FF00),
                             unfocusedBorderColor = Color(0xFFD0FF00)
@@ -402,17 +437,17 @@ fun OfferRideView() {
                     )
 
                     DropdownMenu(
-                        expanded = expandedCapacity,
-                        onDismissRequest = { expandedCapacity = false },
+                        expanded = offerRideUiState.expandedCapacity,
+                        onDismissRequest = { offerRideUiState.expandedCapacity = false },
                         modifier = Modifier
                             .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                             .background(Color(0x33D0FF00))
                     ) {
-                        list.forEach {
+                        offerRideViewModel.list.forEach {
                             DropdownMenuItem(text = { Text(text = it) }, onClick = {
-                                selectedCapacity = it
-                                expandedCapacity = false
-                            }
+                                offerRideUiState.selectedCapacity = it
+                                offerRideUiState.expandedCapacity = false }
+
                             )
                         }
                     }
@@ -425,8 +460,8 @@ fun OfferRideView() {
                 modifier = Modifier
                     .padding(top = 40.dp)
                     .fillMaxSize()
-            ) {
-                TopShadow(alpha = .15f, height = 18.dp)
+            ){
+                offerRideViewModel.TopShadow(alpha = .15f, height = 18.dp)
 
                 Button(
                     modifier = Modifier
@@ -449,25 +484,61 @@ fun OfferRideView() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddressField(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    text: String,
-    keyboardOptions: KeyboardOptions,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChanged,
-        label = { Text(text = text) },
-        keyboardOptions = keyboardOptions,
-        modifier = modifier,
-        shape = RoundedCornerShape(15.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color(0xFFD0FF00),
-            unfocusedBorderColor = Color(0xFFD0FF00)
-        )
+fun DateTime(){
+    val calendarState = rememberSheetState()
+
+    CalendarDialog(
+        state = calendarState,
+        config = CalendarConfig(
+            monthSelection = true,
+            yearSelection = true,
+            style = CalendarStyle.MONTH,
+            disabledDates = listOf(LocalDate.now().plusDays(7))
+        ),
+        selection = CalendarSelection.Date { date ->
+            Log.d("SelectedDate", "$date")
+        }
     )
+
+    val clockState = rememberSheetState()
+    ClockDialog(
+        state = clockState,
+        config = ClockConfig(
+            is24HourFormat = true
+        ),
+        selection = ClockSelection.HoursMinutes { hours, minutes ->
+            Log.d("SelectedDate", "$hours:$minutes")
+        }
+    )
+
+    Column(
+        modifier = Modifier
+            .padding(24.dp, 8.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Row {
+            Button(
+                onClick = { calendarState.show() },
+                colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00))
+            ) {
+                Text(
+                    text = "Date",
+                    color = Color.Black
+                )
+            }
+
+            Button(
+                onClick = { clockState.show() },
+                colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00))
+            ) {
+                Text(
+                    text = "Time",
+                    color = Color.Black
+                )
+            }
+        }
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
