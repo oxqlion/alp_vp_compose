@@ -2,56 +2,41 @@ package com.example.alp_vp_dev1.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardBackspace
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.NavigateNext
-import androidx.compose.material.icons.outlined.Discount
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.alp_vp_dev1.viewmodel.InputDestinationViewModel
 
 @Composable
-fun InputDestinationView(){
+fun InputDestinationView(
+    inputDestinationViewModel: InputDestinationViewModel = viewModel()
+){
 
-    var pickUpPoint by rememberSaveable { mutableStateOf("") }
-    var destinationPoint by rememberSaveable { mutableStateOf("") }
-    var totalPassenger by rememberSaveable { mutableStateOf("") }
-    var promo by rememberSaveable { mutableStateOf("") }
+    val inputDestinationUiState by inputDestinationViewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -99,15 +84,15 @@ fun InputDestinationView(){
                 fontSize = 16.sp
             )
 
-            TextField(
+            inputDestinationViewModel.TextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
-                value = pickUpPoint,
-                onValueChanged = {pickUpPoint = it},
+                value = inputDestinationUiState.pickUpPoint,
+                onValueChanged = {inputDestinationUiState.pickUpPoint = it},
                 text = "Your pick up point ...",
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
+                    keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 )
             )
@@ -121,15 +106,15 @@ fun InputDestinationView(){
                 fontSize = 16.sp
             )
 
-            TextField(
+            inputDestinationViewModel.TextField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
-                value = destinationPoint,
-                onValueChanged = {destinationPoint = it},
+                value = inputDestinationUiState.destinationPoint,
+                onValueChanged = {inputDestinationUiState.destinationPoint = it},
                 text = "Your destination point ...",
                 keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
+                    keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
                 )
             )
@@ -143,12 +128,12 @@ fun InputDestinationView(){
                 fontSize = 16.sp
             )
 
-            NumField(
+            inputDestinationViewModel.NumField(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
-                value = totalPassenger,
-                onValueChanged = {totalPassenger = it},
+                value = inputDestinationUiState.totalPassenger,
+                onValueChanged = {inputDestinationUiState.totalPassenger = it},
                 text = "0",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -163,17 +148,17 @@ fun InputDestinationView(){
                     .padding(top = 34.dp)
                     .fillMaxSize()
             ){
-                TopShadow(alpha = .15f, height = 18.dp)
+                inputDestinationViewModel.TopShadow(alpha = .15f, height = 18.dp)
 
-                PromoField(
+                inputDestinationViewModel.PromoField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 24.dp, top = 18.dp, end = 24.dp, bottom = 8.dp),
-                    value = promo,
-                    onValueChanged = {promo = it},
+                    value = inputDestinationUiState.promo,
+                    onValueChanged = {inputDestinationUiState.promo = it},
                     text = "Use Promo Code",
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
+                        keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     )
                 )
@@ -214,114 +199,6 @@ fun InputDestinationView(){
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TextField(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    text: String,
-    keyboardOptions: KeyboardOptions,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChanged,
-        label = { Text(text = text) },
-        keyboardOptions = keyboardOptions,
-        modifier = modifier,
-        shape = RoundedCornerShape(15.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color(0xFFD0FF00),
-            unfocusedBorderColor = Color(0xFFD0FF00)
-        ),
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.LocationOn,
-                contentDescription = "Location"
-            )
-        }
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun NumField(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    text: String,
-    keyboardOptions: KeyboardOptions,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChanged,
-        label = { Text(text = text) },
-        keyboardOptions = keyboardOptions,
-        modifier = modifier,
-        shape = RoundedCornerShape(15.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color(0xFFD0FF00),
-            unfocusedBorderColor = Color(0xFFD0FF00)
-        )
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PromoField(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    text: String,
-    keyboardOptions: KeyboardOptions,
-    modifier: Modifier = Modifier
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChanged,
-        label = { Text(text = text) },
-        keyboardOptions = keyboardOptions,
-        modifier = modifier,
-        shape = RoundedCornerShape(15.dp),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color(0xFFD0FF00),
-            unfocusedBorderColor = Color(0xFFD0FF00)
-        ),
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Outlined.Discount,
-                contentDescription = "Promo"
-            )
-        },
-        trailingIcon = {
-            IconButton(
-                onClick = { /*TODO*/ }
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.NavigateNext,
-                    contentDescription = "Detail Promo"
-                )
-            }
-        }
-    )
-}
-
-@Composable
-fun TopShadow(alpha: Float = 1f, height: Dp = 8.dp) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(height)
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color.Transparent,
-                        Color.Black.copy(alpha = alpha)
-                    )
-                )
-            )
-    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)
