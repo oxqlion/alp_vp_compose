@@ -179,108 +179,107 @@ fun OfferRideView(
                     .fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                offerRideViewModel.DateTime() {
+                offerRideViewModel.DateTime()
 
 //                DateTime() {
-                    Column(
-                        modifier = Modifier
-                            .padding(start = 24.dp, top = 8.dp)
-                    ) {
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .width(160.dp)
-                                .clickable { offerRideViewModel.calendarState.show() },
-                            value = selectedDate,
-                            onValueChange = { selectedDate = it },
-                            label = { Text(text = "Date") },
-                            trailingIcon = {
-                                Icon(
-                                    iconDate,
-                                    contentDescription = "arrow",
-                                    modifier = Modifier
-                                        .clickable { expandedDate = !expandedDate }
-                                )
-                            },
-                            enabled = false,
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color(0xFFD0FF00),
-                                unfocusedBorderColor = Color(0xFFD0FF00),
-                                disabledBorderColor = Color(0xFFD0FF00),
-                                disabledLabelColor = Color(0xFF333138),
-                                textColor = Color(0xFF000103),
-                                placeholderColor = Color(0xFF000103)
-                            ),
-                            shape = RoundedCornerShape(15.dp)
-                        )
-
-                        DropdownMenu(
-                            expanded = expandedDate,
-                            onDismissRequest = { expandedDate = false },
-                            modifier = Modifier
-                                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-                                .background(Color(0x33D0FF00))
-                                .clickable {
-                                    expandedDate = true
-                                }
-                        ) {
-                            list.forEach {
-                                DropdownMenuItem(text = { Text(text = it) }, onClick = {
-                                    selectedDate = it
-                                    expandedDate = false
-                                }
-                                )
-                            }
-                        }
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .padding(end = 24.dp, top = 8.dp, bottom = 8.dp)
-                    ) {
-                        OutlinedTextField(
-                            modifier = Modifier
-                                .width(160.dp)
-                                .clickable { clockState.show() },
-                            value = selectedTime,
-                            onValueChange = { selectedTime = it },
-                            label = { Text(text = "Time") },
-                            trailingIcon = {
-                                Icon(
-                                    iconTime,
-                                    contentDescription = "arrow",
-                                    modifier = Modifier
-                                        .clickable { expandedTime = !expandedTime }
-                                )
-                            },
-                            enabled = false,
-                            colors = TextFieldDefaults.outlinedTextFieldColors(
-                                focusedBorderColor = Color(0xFFD0FF00),
-                                unfocusedBorderColor = Color(0xFFD0FF00),
-                                disabledBorderColor = Color(0xFFD0FF00),
-                                disabledLabelColor = Color(0xFF333138),
-                                textColor = Color(0xFF000103),
-                                placeholderColor = Color(0xFF000103)
-                            ),
-                            shape = RoundedCornerShape(15.dp)
-                        )
-
-                        DropdownMenu(
-                            expanded = expandedTime,
-                            onDismissRequest = { expandedTime = false },
-                            modifier = Modifier
-                                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-                                .background(Color(0x33D0FF00))
-                        ) {
-                            list.forEach {
-                                DropdownMenuItem(text = { Text(text = it) }, onClick = {
-                                    selectedTime = it
-                                    expandedTime = false
-                                }
-                                )
-                            }
-                        }
-                    }
-                }
+//                    Column(
+//                        modifier = Modifier
+//                            .padding(start = 24.dp, top = 8.dp)
+//                    ) {
+//                        OutlinedTextField(
+//                            modifier = Modifier
+//                                .width(160.dp)
+//                                .clickable { offerRideViewModel.calendarState.show() },
+//                            value = selectedDate,
+//                            onValueChange = { selectedDate = it },
+//                            label = { Text(text = "Date") },
+//                            trailingIcon = {
+//                                Icon(
+//                                    iconDate,
+//                                    contentDescription = "arrow",
+//                                    modifier = Modifier
+//                                        .clickable { expandedDate = !expandedDate }
+//                                )
+//                            },
+//                            enabled = false,
+//                            colors = TextFieldDefaults.outlinedTextFieldColors(
+//                                focusedBorderColor = Color(0xFFD0FF00),
+//                                unfocusedBorderColor = Color(0xFFD0FF00),
+//                                disabledBorderColor = Color(0xFFD0FF00),
+//                                disabledLabelColor = Color(0xFF333138),
+//                                textColor = Color(0xFF000103),
+//                                placeholderColor = Color(0xFF000103)
+//                            ),
+//                            shape = RoundedCornerShape(15.dp)
+//                        )
+//
+//                        DropdownMenu(
+//                            expanded = expandedDate,
+//                            onDismissRequest = { expandedDate = false },
+//                            modifier = Modifier
+//                                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+//                                .background(Color(0x33D0FF00))
+//                                .clickable {
+//                                    expandedDate = true
+//                                }
+//                        ) {
+//                            list.forEach {
+//                                DropdownMenuItem(text = { Text(text = it) }, onClick = {
+//                                    selectedDate = it
+//                                    expandedDate = false
+//                                }
+//                                )
+//                            }
+//                        }
+//                    }
+//
+//                    Column(
+//                        modifier = Modifier
+//                            .padding(end = 24.dp, top = 8.dp, bottom = 8.dp)
+//                    ) {
+//                        OutlinedTextField(
+//                            modifier = Modifier
+//                                .width(160.dp)
+//                                .clickable { clockState.show() },
+//                            value = selectedTime,
+//                            onValueChange = { selectedTime = it },
+//                            label = { Text(text = "Time") },
+//                            trailingIcon = {
+//                                Icon(
+//                                    iconTime,
+//                                    contentDescription = "arrow",
+//                                    modifier = Modifier
+//                                        .clickable { expandedTime = !expandedTime }
+//                                )
+//                            },
+//                            enabled = false,
+//                            colors = TextFieldDefaults.outlinedTextFieldColors(
+//                                focusedBorderColor = Color(0xFFD0FF00),
+//                                unfocusedBorderColor = Color(0xFFD0FF00),
+//                                disabledBorderColor = Color(0xFFD0FF00),
+//                                disabledLabelColor = Color(0xFF333138),
+//                                textColor = Color(0xFF000103),
+//                                placeholderColor = Color(0xFF000103)
+//                            ),
+//                            shape = RoundedCornerShape(15.dp)
+//                        )
+//
+//                        DropdownMenu(
+//                            expanded = expandedTime,
+//                            onDismissRequest = { expandedTime = false },
+//                            modifier = Modifier
+//                                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+//                                .background(Color(0x33D0FF00))
+//                        ) {
+//                            list.forEach {
+//                                DropdownMenuItem(text = { Text(text = it) }, onClick = {
+//                                    selectedTime = it
+//                                    expandedTime = false
+//                                }
+//                                )
+//                            }
+//                        }
+//                    }
 //                }
             }
 
