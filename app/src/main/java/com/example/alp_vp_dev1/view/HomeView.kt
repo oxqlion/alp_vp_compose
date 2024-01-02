@@ -135,7 +135,7 @@ fun card() {
                     .absolutePadding(bottom = 5.dp)
                     .size(150.dp)
             ) {
-                
+
             }
         }
     }
