@@ -289,6 +289,6 @@ fun RegisterView() {
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun RegisterPreivew() {
+fun RegisterPreview() {
     RegisterView()
 }
