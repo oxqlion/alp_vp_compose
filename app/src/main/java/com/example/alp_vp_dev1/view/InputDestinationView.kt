@@ -29,25 +29,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.alp_vp_dev1.viewmodel.InputDestinationViewModel
 
 @Composable
 fun InputDestinationView(
-    inputDestinationViewModel: InputDestinationViewModel = viewModel()
-){
+    inputDestinationViewModel: InputDestinationViewModel = viewModel(),
+    navigate: () -> Unit
+) {
 
     val inputDestinationUiState by inputDestinationViewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
             .background(Color(0xFFD0FF00))
-    ){
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 25.dp, top = 25.dp, end = 25.dp),
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
             Icon(
                 imageVector = Icons.Filled.KeyboardBackspace,
                 contentDescription = "Back"
@@ -74,7 +77,7 @@ fun InputDestinationView(
                 .padding(top = 25.dp)
                 .fillMaxWidth()
                 .background(Color(0XFFFFFFFF), RoundedCornerShape(25.dp, 25.dp, 0.dp, 0.dp))
-        ){
+        ) {
             Text(
                 modifier = Modifier
                     .padding(start = 24.dp, top = 28.dp)
@@ -89,7 +92,7 @@ fun InputDestinationView(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
                 value = inputDestinationUiState.pickUpPoint,
-                onValueChanged = {inputDestinationUiState.pickUpPoint = it},
+                onValueChanged = { inputDestinationUiState.pickUpPoint = it },
                 text = "Your pick up point ...",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
@@ -111,7 +114,7 @@ fun InputDestinationView(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
                 value = inputDestinationUiState.destinationPoint,
-                onValueChanged = {inputDestinationUiState.destinationPoint = it},
+                onValueChanged = { inputDestinationUiState.destinationPoint = it },
                 text = "Your destination point ...",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
@@ -133,7 +136,7 @@ fun InputDestinationView(
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 8.dp),
                 value = inputDestinationUiState.totalPassenger,
-                onValueChanged = {inputDestinationUiState.totalPassenger = it},
+                onValueChanged = { inputDestinationUiState.totalPassenger = it },
                 text = "0",
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
@@ -147,7 +150,7 @@ fun InputDestinationView(
                 modifier = Modifier
                     .padding(top = 34.dp)
                     .fillMaxSize()
-            ){
+            ) {
                 inputDestinationViewModel.TopShadow(alpha = .15f, height = 18.dp)
 
                 inputDestinationViewModel.PromoField(
@@ -155,7 +158,7 @@ fun InputDestinationView(
                         .fillMaxWidth()
                         .padding(start = 24.dp, top = 18.dp, end = 24.dp, bottom = 8.dp),
                     value = inputDestinationUiState.promo,
-                    onValueChanged = {inputDestinationUiState.promo = it},
+                    onValueChanged = { inputDestinationUiState.promo = it },
                     text = "Use Promo Code",
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
@@ -168,7 +171,7 @@ fun InputDestinationView(
                         .fillMaxWidth()
                         .padding(24.dp, 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                ) {
                     Text(
                         text = "Total : ",
                         fontSize = 24.sp,
@@ -187,7 +190,7 @@ fun InputDestinationView(
                         .padding(24.dp, 8.dp)
                         .fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00)),
-                    onClick = { /*TODO*/ }
+                    onClick = { navigate() }
                 ) {
                     Text(
                         text = "Join Ride",
@@ -203,6 +206,6 @@ fun InputDestinationView(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun InputDestinationPreview(){
-    InputDestinationView()
+fun InputDestinationPreview() {
+    InputDestinationView(navigate = {})
 }
