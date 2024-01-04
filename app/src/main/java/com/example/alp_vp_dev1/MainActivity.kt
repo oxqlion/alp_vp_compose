@@ -1,5 +1,6 @@
 package com.example.alp_vp_dev1
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,11 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.alp_vp_dev1.ui.theme.Alp_vp_dev1Theme
-import com.example.alp_vp_dev1.view.OfferRideView
+import com.example.alp_vp_dev1.view.RideDetailsView
+import com.example.alp_vp_dev1.view.RideShareRoute
 
+@RequiresApi(Build.VERSION_CODES.O)
 class MainActivity : ComponentActivity() {
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -26,25 +31,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    OfferRideView()
+//                    RideDetailsView(joinRide = {})
+                    RideShareRoute()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Alp_vp_dev1Theme {
-        Greeting("Android")
     }
 }
