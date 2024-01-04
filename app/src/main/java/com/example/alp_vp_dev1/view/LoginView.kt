@@ -31,20 +31,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.alp_vp_dev1.ui.theme.DarkGrey
 import com.example.alp_vp_dev1.ui.theme.IjoButton
+import com.example.alp_vp_dev1.viewmodel.LoginViewModel
 import kotlin.math.round
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginView() {
+fun LoginView(
+    loginViewModel: LoginViewModel,
+    navController: NavController
+) {
 
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -97,6 +105,12 @@ fun LoginView() {
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     isPasswordValid = isPasswordValid
                 )
+
+                Button(onClick = {
+                    loginViewModel.Login(email, password, navController)
+                }) {
+                    Text(text = "Login")
+                }
 
             }
         }
@@ -151,5 +165,5 @@ fun CustomPasswordField(
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun LoginPreivew() {
-    LoginView()
+//    LoginView()
 }
