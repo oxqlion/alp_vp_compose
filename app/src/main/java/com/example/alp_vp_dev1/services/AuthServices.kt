@@ -9,7 +9,7 @@ import retrofit2.http.POST
 interface AuthServices {
 
     @POST("login")
-    suspend fun login(@Body email: String, password: String): User
+    suspend fun login(@Body user: User): User
 
     @DELETE("logout")
     suspend fun logout(): APIResponse

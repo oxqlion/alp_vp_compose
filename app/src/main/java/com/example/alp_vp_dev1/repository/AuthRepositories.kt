@@ -1,24 +1,29 @@
 package com.example.alp_vp_dev1.repository
 
-import android.util.Log
 import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.services.AuthServices
 import java.net.HttpURLConnection
 
 class AuthRepositories(private val authServices: AuthServices) {
 
-    suspend fun login(
-        email: String,
-        password: String
-    ): String {
-        val result = authServices.login(email, password)
-        if (result.status == HttpURLConnection.HTTP_OK) {
-            println("Success: $result")
-            return result.message
+    suspend fun login(user: User): String {
+        return try {
+            val result = authServices.login(user)
+
+            if (result.status == HttpURLConnection.HTTP_OK) {
+                println("Success: $result")
+                result.message // Return relevant data from the successful response
+            } else {
+                println("Failed: $result")
+                throw Exception("Login failed: ${result.message}") // Re-throw with a more informative message
+            }
+        } catch (e: Exception) {
+            // Handle specific exceptions or provide a generic message
+            println("Error during login: ${e.message}")
+            "Login failed due to an error" // Return a generic error message
         }
-        println("failed: $result")
-        return result.message
     }
+
 
     suspend fun logout() {}
 

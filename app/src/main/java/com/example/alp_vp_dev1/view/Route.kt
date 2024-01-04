@@ -30,7 +30,7 @@ fun RideShareRoute() {
     Scaffold {
         NavHost(
             navController = navController,
-            startDestination = ListScreen.Login.name,
+            startDestination = ListScreen.RideDetails.name,
         ) {
             composable(ListScreen.Login.name) {
                 val loginViewModel: LoginViewModel = viewModel()
@@ -43,6 +43,9 @@ fun RideShareRoute() {
             }
             composable(ListScreen.History.name) {}
             composable(ListScreen.OfferRide.name) {}
+            composable(ListScreen.RideDetails.name) {
+                RideDetailsView()
+            }
         }
     }
 }
