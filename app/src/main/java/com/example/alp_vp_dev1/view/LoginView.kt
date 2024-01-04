@@ -51,6 +51,22 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.alp_vp_dev1.ui.theme.DarkGrey
+import com.example.alp_vp_dev1.ui.theme.IjoButton
+import com.example.alp_vp_dev1.viewmodel.LoginViewModel
+import kotlin.math.round
 import androidx.compose.ui.unit.sp
 import com.example.alp_vp_dev1.R
 import kotlinx.coroutines.launch
@@ -60,7 +76,10 @@ import java.util.regex.Pattern
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginView() {
+fun LoginView(
+    loginViewModel: LoginViewModel,
+    navController: NavController
+) {
 
     var name by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
@@ -168,7 +187,7 @@ fun LoginView() {
                         text = "Lupa Password?",
                     )
                 }
-
+                
                 Button(
                     onClick = {
                         isEmailValid = isValidEmail(email)
@@ -176,6 +195,7 @@ fun LoginView() {
 
                         if (isEmailValid && isPasswordValid) {
                             scope.launch {
+                                loginViewModel.Login(email, password, navController)
                                 snackbarHostState.showSnackbar("Data $name saved")
                             }
                         }
@@ -274,7 +294,6 @@ fun LoginView() {
                             .clickable {  }
                     )
                 }
-
             }
         }
     )
@@ -375,6 +394,6 @@ fun CustomEmailField(
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun LoginPreview() {
-    LoginView()
+fun LoginPreivew() {
+//    LoginView()
 }

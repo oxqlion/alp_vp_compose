@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.alp_vp_dev1.viewmodel.LoginViewModel
 import com.example.alp_vp_dev1.viewmodel.PassengerRideDetailsUIState
 import com.example.alp_vp_dev1.viewmodel.PassengerRideDetailsViewModel
 
@@ -29,9 +30,12 @@ fun RideShareRoute() {
     Scaffold {
         NavHost(
             navController = navController,
-            startDestination = ListScreen.InputDestination.name,
+            startDestination = ListScreen.Login.name,
         ) {
-            composable(ListScreen.Login.name) {}
+            composable(ListScreen.Login.name) {
+                val loginViewModel: LoginViewModel = viewModel()
+                LoginView(loginViewModel, navController)
+            }
             composable(ListScreen.InputDestination.name) {
                 InputDestinationView(
                     navigate = { navController.navigate(ListScreen.RideDetails.name) }
@@ -39,20 +43,6 @@ fun RideShareRoute() {
             }
             composable(ListScreen.History.name) {}
             composable(ListScreen.OfferRide.name) {}
-            composable(ListScreen.RideDetails.name) {
-//                val passengerRideDetailsViewModel: PassengerRideDetailsViewModel = viewModel()
-//                passengerRideDetailsViewModel.rideDetailView()
-
-//                when (passengerRideDetailsViewModel.passengerRideDetailUIState) {
-//                    is PassengerRideDetailsUIState.Success -> {
-                RideDetailsView()
-//                    }
-
-//                    is PassengerRideDetailsUIState.Error -> {}
-//                    is PassengerRideDetailsUIState.Loading -> {}
-//                }
-
-            }
         }
     }
 }
