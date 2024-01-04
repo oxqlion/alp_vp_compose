@@ -56,19 +56,24 @@ import com.example.alp_vp_dev1.R
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginView() {
+fun RegisterView() {
 
     var name by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
+    var confirmPassword by remember { mutableStateOf("") }
     var isEmailValid by rememberSaveable { mutableStateOf(true) }
     var isPasswordValid by rememberSaveable { mutableStateOf(true) }
+    var showPasswordMismatchError by remember { mutableStateOf(false) }
+
+    val validatePasswords = {
+        showPasswordMismatchError = password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword
+    }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -82,7 +87,7 @@ fun LoginView() {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Login",
+                    text = "Register",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
@@ -157,15 +162,29 @@ fun LoginView() {
                     isPasswordValid = isPasswordValid
                 )
 
-                Row(
+                CustomPasswordField(
+                    value = confirmPassword,
+                    onValueChanged = {
+                        confirmPassword = it
+                        validatePasswords()
+                                     },
+                    text = "Confirm Password",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .clickable { },
-                    horizontalArrangement = Arrangement.End
-                ) {
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    isPasswordValid = !showPasswordMismatchError
+                )
+                if (showPasswordMismatchError) {
                     Text(
-                        text = "Lupa Password?",
+                        text = "Passwords do not match",
+                        color = Color.Red,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
                     )
                 }
 
@@ -190,11 +209,10 @@ fun LoginView() {
                     enabled = name.isNotBlank() && phone.isNotBlank() && email.isNotBlank() && password.isNotBlank(),
                 ) {
                     Text(
-                        text = "Login",
+                        text = "Register",
                         color = Color.Black
                     )
                 }
-
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -208,14 +226,14 @@ fun LoginView() {
                             .width(100.dp)
                     )
                     Text(
-                        text = "Atau login dengan",
+                        text = "Atau register dengan",
                         color = Color.LightGray
                     )
                     Divider(
-                            color = Color.LightGray,
-                    modifier = Modifier
-                        .absolutePadding(right = 20.dp)
-                        .width(100.dp)
+                        color = Color.LightGray,
+                        modifier = Modifier
+                            .absolutePadding(right = 20.dp)
+                            .width(100.dp)
                     )
                 }
                 Row(
@@ -264,117 +282,13 @@ fun LoginView() {
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(5.dp))
-                Row {
-                    Text(text = "belum memliki akun?")
-                    Text(
-                        text = " Register",
-                        color = Color(0xFFA4C904),
-                        modifier = Modifier
-                            .clickable {  }
-                    )
-                }
-
             }
         }
     )
 }
 
-// Function to validate email using regex
-fun isValidEmail(email: String): Boolean {
-    val emailPattern = Pattern.compile(
-        "^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$",
-        Pattern.CASE_INSENSITIVE
-    )
-    return emailPattern.matcher(email).matches()
-}
-
-// Function to validate password
-fun isValidPassword(password: String): Boolean {
-    val passwordPattern = Pattern.compile(
-        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+\$).{8,}\$"
-    )
-    return passwordPattern.matcher(password).matches()
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomPasswordField(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    text: String,
-    keyboardOptions: KeyboardOptions,
-    modifier: Modifier = Modifier,
-    isPasswordValid: Boolean
-) {
-
-    var isPasswordVisible by remember { mutableStateOf(false) }
-
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChanged,
-        label = { Text(text = text) },
-        keyboardOptions = keyboardOptions,
-        shape = RoundedCornerShape(12.dp),
-        modifier = modifier,
-        isError = !isPasswordValid,
-        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-            IconButton(
-                onClick = { isPasswordVisible = !isPasswordVisible }
-            ) {
-                Icon(
-                    imageVector = if (isPasswordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                    contentDescription = if (isPasswordVisible) "Hide password" else "Show password"
-                )
-            }
-        },
-    )
-
-    if (!isPasswordValid) {
-        Text(
-            text = "Password must be 8 characters long and contain uppercase, lowercase, number, and special character",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 4.dp),
-            Color.Red
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomEmailField(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    text: String,
-    keyboardOptions: KeyboardOptions,
-    modifier: Modifier = Modifier,
-    isEmailValid: Boolean
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChanged,
-        label = { Text(text = text) },
-        keyboardOptions = keyboardOptions,
-        shape = RoundedCornerShape(12.dp),
-        modifier = modifier,
-        isError = !isEmailValid
-    )
-
-    if (!isEmailValid) {
-        Text(
-            text = "Invalid Email Format",
-            color = Color.Red,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
-        )
-    }
-}
-
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun LoginPreview() {
-    LoginView()
+fun RegisterPreview() {
+    RegisterView()
 }
