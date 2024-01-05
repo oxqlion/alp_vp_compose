@@ -134,19 +134,19 @@ fun RegisterView() {
                     shape = RoundedCornerShape(12.dp)
                 )
 
-                CustomEmailField(
-                    value = email,
-                    onValueChanged = { email = it },
-                    text = "email",
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                    isEmailValid = isEmailValid
-                )
+//                CustomEmailField(
+//                    value = email,
+//                    onValueChanged = { email = it },
+//                    text = "email",
+//                    keyboardOptions = KeyboardOptions.Default.copy(
+//                        keyboardType = KeyboardType.Email,
+//                        imeAction = ImeAction.Next
+//                    ),
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(horizontal = 16.dp, vertical = 8.dp),
+//                    isEmailValid = isEmailValid
+//                )
 
                 CustomPasswordField(
                     value = password,
@@ -190,8 +190,8 @@ fun RegisterView() {
 
                 Button(
                     onClick = {
-                        isEmailValid = isValidEmail(email)
-                        isPasswordValid = isValidPassword(password)
+//                        isEmailValid = isValidEmail(email)
+//                        isPasswordValid = isValidPassword(password)
 
                         if (isEmailValid && isPasswordValid) {
                             scope.launch {

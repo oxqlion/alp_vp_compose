@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.alp_vp_dev1.data.DataStoreManager
 import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.ui.theme.DarkGrey
 import com.example.alp_vp_dev1.ui.theme.IjoButton
@@ -53,7 +54,8 @@ import kotlin.math.round
 @Composable
 fun LoginView(
     loginViewModel: LoginViewModel,
-    navController: NavController
+    navController: NavController,
+    dataStore: DataStoreManager
 ) {
 
     var email by rememberSaveable { mutableStateOf("") }
@@ -115,7 +117,7 @@ fun LoginView(
                         password = password
                     )
 
-                    loginViewModel.Login(user, navController)
+                    loginViewModel.Login(user, navController, dataStore)
                     Log.d("haloo", "mas")
                 }) {
                     Text(text = "Login")
