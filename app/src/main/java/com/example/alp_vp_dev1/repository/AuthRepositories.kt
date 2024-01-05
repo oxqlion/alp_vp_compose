@@ -12,7 +12,8 @@ class AuthRepositories(private val authServices: AuthServices) {
 
             if (result.status == HttpURLConnection.HTTP_OK) {
                 println("Success: $result")
-                result.message // Return relevant data from the successful response
+                println("${result::class.simpleName}")
+                return "{ $result }" // Return relevant data from the successful response
             } else {
                 println("Failed: $result")
                 throw Exception("Login failed: ${result.message}") // Re-throw with a more informative message
