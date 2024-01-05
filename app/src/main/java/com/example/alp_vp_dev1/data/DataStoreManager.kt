@@ -4,9 +4,11 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.navigation.NavController
 import com.example.alp_vp_dev1.model.User
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private const val DATA_STORE_NAME = "ALPVP"
@@ -32,5 +34,11 @@ class DataStoreManager(context: Context) {
     val getUser: Flow<User?> = userDataStore.data.map { preferences ->
         val jsonUser = preferences[USER_KEY] ?: return@map null
         Gson().fromJson(jsonUser, User::class.java)
+    }
+
+    suspend fun clearDataStore() {
+        userDataStore.edit {
+            it.clear()
+        }
     }
 }

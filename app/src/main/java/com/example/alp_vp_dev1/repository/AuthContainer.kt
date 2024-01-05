@@ -11,7 +11,7 @@ class AuthContainer {
         val ACCESS_TOKEN = ""
     }
 
-    private val BASE_URL = "http://192.168.1.13:8080/api/"
+    private val BASE_URL = "http://192.168.1.20:8080/api/"
 
     private val client = OkHttpClient.Builder()
         .build()

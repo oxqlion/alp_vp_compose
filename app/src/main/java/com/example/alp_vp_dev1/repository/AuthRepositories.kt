@@ -28,6 +28,22 @@ class AuthRepositories(private val authServices: AuthServices) {
 
     suspend fun logout() {}
 
-    suspend fun create_user() {}
+    suspend fun create_user(user: User): String {
+        println("masuk create user repo")
+        return try {
+            val result = authServices.create_user(user)
+
+            if (result.status == HttpURLConnection.HTTP_OK) {
+                println("mantap status 200")
+                return result.status.toString()
+            } else {
+                println("register gagal")
+                throw Exception("Register failed: ${result.status}")
+            }
+        } catch (e: Exception) {
+            println("Error during create user: ${e.message}")
+            "Register failed due to an error"
+        }
+    }
 
 }
