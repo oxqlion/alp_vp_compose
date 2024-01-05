@@ -31,11 +31,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.viewmodel.InputDestinationViewModel
 
 @Composable
 fun InputDestinationView(
-    inputDestinationViewModel: InputDestinationViewModel = viewModel(),
+    user: User,
+    inputDestinationViewModel: InputDestinationViewModel,
     navigate: () -> Unit
 ) {
 
@@ -207,5 +209,5 @@ fun InputDestinationView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun InputDestinationPreview() {
-    InputDestinationView(navigate = {})
+//    InputDestinationView(navigate = {})
 }

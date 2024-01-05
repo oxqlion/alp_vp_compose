@@ -32,6 +32,8 @@ class InputDestinationViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(InputDestination())
     val uiState: StateFlow<InputDestination> = _uiState.asStateFlow()
 
+
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun TextField(

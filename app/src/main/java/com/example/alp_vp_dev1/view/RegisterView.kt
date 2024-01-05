@@ -2,6 +2,7 @@ package com.example.alp_vp_dev1.view
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -52,14 +54,22 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.alp_vp_dev1.R
+import com.example.alp_vp_dev1.data.DataStoreManager
+import com.example.alp_vp_dev1.model.User
+import com.example.alp_vp_dev1.viewmodel.RegisterViewModel
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterView() {
+fun RegisterView(
+    registerViewModel: RegisterViewModel,
+    navController: NavController,
+    dataStore: DataStoreManager
+) {
 
     var name by rememberSaveable { mutableStateOf("") }
     var phone by rememberSaveable { mutableStateOf("") }
@@ -72,7 +82,8 @@ fun RegisterView() {
     var showPasswordMismatchError by remember { mutableStateOf(false) }
 
     val validatePasswords = {
-        showPasswordMismatchError = password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword
+        showPasswordMismatchError =
+            password.isNotEmpty() && confirmPassword.isNotEmpty() && password != confirmPassword
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -82,7 +93,8 @@ fun RegisterView() {
         content = {
             Column(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .background(Color.White),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -134,19 +146,19 @@ fun RegisterView() {
                     shape = RoundedCornerShape(12.dp)
                 )
 
-//                CustomEmailField(
-//                    value = email,
-//                    onValueChanged = { email = it },
-//                    text = "email",
-//                    keyboardOptions = KeyboardOptions.Default.copy(
-//                        keyboardType = KeyboardType.Email,
-//                        imeAction = ImeAction.Next
-//                    ),
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(horizontal = 16.dp, vertical = 8.dp),
-//                    isEmailValid = isEmailValid
-//                )
+                CustomEmailField(
+                    value = email,
+                    onValueChanged = { email = it },
+                    text = "email",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    isEmailValid = isEmailValid
+                )
 
                 CustomPasswordField(
                     value = password,
@@ -167,7 +179,7 @@ fun RegisterView() {
                     onValueChanged = {
                         confirmPassword = it
                         validatePasswords()
-                                     },
+                    },
                     text = "Confirm Password",
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Password,
@@ -194,23 +206,37 @@ fun RegisterView() {
 //                        isPasswordValid = isValidPassword(password)
 
                         if (isEmailValid && isPasswordValid) {
+
+                            val user = User(
+                                email = email,
+                                password = password,
+                                name = name,
+                                phone = phone,
+                                driver = "0"
+                            )
+
+                            registerViewModel.Register(user, navController, dataStore)
+                            println("register view button clicked")
+
                             scope.launch {
                                 snackbarHostState.showSnackbar("Data $name saved")
                             }
+
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 16.dp)
+                        .padding(16.dp, 12.dp)
                         .height(50.dp)
-                        .shadow(18.dp, shape = RoundedCornerShape(5.dp)),
-                    shape = RoundedCornerShape(4.dp),
-                    enabled = name.isNotBlank() && phone.isNotBlank() && email.isNotBlank() && password.isNotBlank(),
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color(0xFFD0FF00)),
+//                    enabled = name.isNotBlank() && phone.isNotBlank() && email.isNotBlank() && password.isNotBlank(),
                 ) {
                     Text(
                         text = "Register",
-                        color = Color.Black
+                        color = Color.Black,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.ExtraBold
                     )
                 }
                 Spacer(modifier = Modifier.height(10.dp))
@@ -282,13 +308,69 @@ fun RegisterView() {
                         )
                     }
                 }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = "Sudah punya akun?",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF515052)
+                    )
+                    Text(
+                        text = "Login",
+                        modifier = Modifier
+                            .clickable {
+                                navController.navigate(ListScreen.Login.name)
+                            }
+                            .padding(6.dp, 0.dp, 0.dp, 0.dp),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFD0FF00)
+                    )
+                }
             }
         }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomEmailField(
+    value: String,
+    onValueChanged: (String) -> Unit,
+    text: String,
+    keyboardOptions: KeyboardOptions,
+    modifier: Modifier,
+    isEmailValid: Boolean
+) {
+    OutlinedTextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        value = value,
+        onValueChange = onValueChanged,
+        label = {
+            Text(text = "Email")
+        },
+        placeholder = {
+            Text(text = "Email")
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            unfocusedBorderColor = Color(0xFF333138),
+            focusedBorderColor = Color(0xFFD0FF00)
+        ),
+        shape = RoundedCornerShape(12.dp)
+    )
+
+}
+
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun RegisterPreview() {
-    RegisterView()
+//    RegisterView()
 }
