@@ -13,13 +13,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.alp_vp_dev1.data.DataStoreManager
+import com.example.alp_vp_dev1.data.PropertyLoader
 import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.viewmodel.CheckUserViewModel
 import com.example.alp_vp_dev1.viewmodel.InputDestinationViewModel
 import com.example.alp_vp_dev1.viewmodel.LoginViewModel
+import com.example.alp_vp_dev1.viewmodel.OfferRideViewModel
 import com.example.alp_vp_dev1.viewmodel.PassengerRideDetailsUIState
 import com.example.alp_vp_dev1.viewmodel.PassengerRideDetailsViewModel
 import com.example.alp_vp_dev1.viewmodel.RegisterViewModel
+import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
@@ -42,11 +45,14 @@ enum class ListScreen() {
 fun RideShareRoute() {
     val navController = rememberNavController()
     val dataStore = DataStoreManager(LocalContext.current)
+    val context = LocalContext.current
+    Places.initialize(context, MAPS_API_KEY)
+
 
     Scaffold {
         NavHost(
             navController = navController,
-            startDestination = ListScreen.Splash.name,
+            startDestination = ListScreen.OfferRide.name,
         ) {
             composable(ListScreen.Splash.name) {
 
@@ -114,7 +120,10 @@ fun RideShareRoute() {
                 }
             }
             composable(ListScreen.History.name) {}
-            composable(ListScreen.OfferRide.name) {}
+            composable(ListScreen.OfferRide.name) {
+                val offerRideDetailsViewModel: OfferRideViewModel = viewModel()
+                OfferRideView(offerRideDetailsViewModel, context)
+            }
             composable(ListScreen.RideDetails.name) {
                 RideDetailsView()
             }

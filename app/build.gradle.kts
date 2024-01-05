@@ -134,6 +134,7 @@ dependencies {
     implementation ("com.google.maps.android:maps-ktx:3.2.1")
     // KTX for the Maps SDK for Android Utility Library
     implementation ("com.google.maps.android:maps-utils-ktx:3.2.1")
+    implementation ("com.google.android.libraries.places:places:3.0.0")
 
     //Handle backend requests
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
