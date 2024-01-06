@@ -16,6 +16,7 @@ import com.example.alp_vp_dev1.data.DataStoreManager
 import com.example.alp_vp_dev1.data.PropertyLoader
 import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.viewmodel.CheckUserViewModel
+import com.example.alp_vp_dev1.viewmodel.HomeUIState
 import com.example.alp_vp_dev1.viewmodel.HomeViewModel
 import com.example.alp_vp_dev1.viewmodel.InputDestinationViewModel
 import com.example.alp_vp_dev1.viewmodel.LoginViewModel
@@ -23,6 +24,8 @@ import com.example.alp_vp_dev1.viewmodel.OfferRideViewModel
 import com.example.alp_vp_dev1.viewmodel.PassengerRideDetailsUIState
 import com.example.alp_vp_dev1.viewmodel.PassengerRideDetailsViewModel
 import com.example.alp_vp_dev1.viewmodel.RegisterViewModel
+import com.example.alp_vp_dev1.viewmodel.RideDetailsUIState
+import com.example.alp_vp_dev1.viewmodel.RideDetailsViewModel
 import com.google.android.libraries.places.api.Places
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -103,7 +106,19 @@ fun RideShareRoute() {
                 }
 
                 if (loggedInUserObj != null && loggedInUserObj.driver.contains("1")) {
-                    HomeView(loggedInUserObj, navController)
+
+                    when (homeViewModel.homeUIState) {
+                        is HomeUIState.Success -> {
+                            HomeView(
+                                loggedInUserObj,
+                                (homeViewModel.homeUIState as HomeUIState.Success).data,
+                                navController
+                            )
+                        }
+
+                        is HomeUIState.Loading -> {}
+                        is HomeUIState.Error -> {}
+                    }
                 } else {
                     navController.navigate(ListScreen.Home.name)
                 }
@@ -180,8 +195,46 @@ fun RideShareRoute() {
                     navController.navigate(ListScreen.Home.name)
                 }
             }
-            composable(ListScreen.RideDetails.name) {
-                RideDetailsView()
+            composable(ListScreen.RideDetails.name + "/{rideId}") {
+                val rideDetailsViewModel: RideDetailsViewModel = viewModel()
+                rideDetailsViewModel.loadRideDetails(
+                    it.arguments?.getString("rideId")!!.toInt()
+                )
+
+                var loggedInUser: User? = null
+
+                rideDetailsViewModel.viewModelScope.launch {
+                    loggedInUser = dataStore.getUser.first()!!
+                    if (loggedInUser == null) navController.navigate(ListScreen.Login.name)
+                }
+
+                val loggedInUserObj = loggedInUser?.let { it1 ->
+                    User(
+                        user_id = it1.user_id,
+                        email = loggedInUser!!.email,
+                        password = "",
+                        name = loggedInUser!!.name,
+                        phone = loggedInUser!!.phone,
+                        driver = loggedInUser!!.driver
+                    )
+                }
+
+                if (loggedInUserObj != null && loggedInUserObj.driver.contains("1")) {
+
+                    when (rideDetailsViewModel.rideDetailsUIState) {
+                        is RideDetailsUIState.Success -> {
+                            RideDetailsView(
+                                (rideDetailsViewModel.rideDetailsUIState as RideDetailsUIState.Success).data,
+                                navController
+                            )
+                        }
+
+                        is RideDetailsUIState.Error -> {}
+                        is RideDetailsUIState.Loading -> {}
+                    }
+                } else {
+                    navController.navigate(ListScreen.Home.name)
+                }
             }
         }
     }

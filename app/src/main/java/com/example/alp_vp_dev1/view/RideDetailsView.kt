@@ -50,6 +50,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.alp_vp_dev1.model.RideModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -62,14 +64,27 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RideDetailsView() {
+fun RideDetailsView(
+    ride: RideModel,
+    navController: NavController
+) {
 
     val singapore = LatLng(1.35, 103.87)
+
+    val standby = LatLng(ride.start_lat, ride.start_lng)
+    val destination = LatLng(ride.destination_lat, ride.destination_lng)
+
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(singapore, 15f)
+        position = CameraPosition.fromLatLngZoom(standby, 15f)
     }
     val markerState = rememberMarkerState(
         position = singapore
+    )
+    val standbyState = rememberMarkerState(
+        position = standby
+    )
+    val destinationState = rememberMarkerState(
+        position = destination
     )
 
 //    val sheetState = rememberModalBottomSheetState()
@@ -93,7 +108,10 @@ fun RideDetailsView() {
             cameraPositionState = cameraPositionState
         ) {
             Marker(
-                state = markerState
+                state = standbyState
+            )
+            Marker(
+                state = destinationState
             )
         }
 
@@ -108,7 +126,7 @@ fun RideDetailsView() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(
-                onClick = {/* TODO */ },
+                onClick = { navController.navigate(ListScreen.Home.name) },
                 modifier = Modifier
                     .padding(24.dp)
                     .size(36.dp)
@@ -116,7 +134,7 @@ fun RideDetailsView() {
                 Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
             }
             IconButton(
-                onClick = {/* TODO */ },
+                onClick = {  },
                 modifier = Modifier
                     .padding(24.dp)
                     .size(36.dp)
@@ -150,7 +168,7 @@ fun RideDetailsView() {
                     DriverDetails(
                         driverName = "Tri Winarno",
                         rating = 4.7f,
-                        vehicleDetails = "Xenia (Hitam)",
+                        vehicleDetails = ride.car_model,
                         licensePlate = "L 8888 AB"
                     )
 
@@ -164,10 +182,10 @@ fun RideDetailsView() {
                     )
 
                     RideDetails(
-                        date = "3 January 2024",
-                        time = "16:00 WITA",
-                        standbyAddress = "CitraLand CBD Boulevard, Made",
-                        destinationAddress = "Jl. Mayjend. Jonosewojo No.2"
+                        date = ride.going_date,
+                        time = ride.going_time,
+                        standbyAddress = ride.start_location,
+                        destinationAddress = ride.destination_location
                     )
 
                 }
@@ -447,5 +465,5 @@ fun BottomSheetRideStatus(status: Int) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun RideDetailsPreview() {
-    RideDetailsView()
+//    RideDetailsView()
 }
