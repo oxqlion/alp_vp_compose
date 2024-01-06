@@ -6,6 +6,7 @@ data class RideModel(
     val status: Int = -1,
     val message: String = "",
     val ride_id: Int = -1,
+    val user_id: Int = -1,
     val driver_id: Int = -1,
     val ride_status: Int = -1,
     val start_location: String = "",

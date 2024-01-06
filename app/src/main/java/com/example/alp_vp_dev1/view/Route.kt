@@ -16,6 +16,7 @@ import com.example.alp_vp_dev1.data.DataStoreManager
 import com.example.alp_vp_dev1.data.PropertyLoader
 import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.viewmodel.CheckUserViewModel
+import com.example.alp_vp_dev1.viewmodel.HomeViewModel
 import com.example.alp_vp_dev1.viewmodel.InputDestinationViewModel
 import com.example.alp_vp_dev1.viewmodel.LoginViewModel
 import com.example.alp_vp_dev1.viewmodel.OfferRideViewModel
@@ -52,7 +53,7 @@ fun RideShareRoute() {
     Scaffold {
         NavHost(
             navController = navController,
-            startDestination = ListScreen.OfferRide.name,
+            startDestination = ListScreen.Home.name,
         ) {
             composable(ListScreen.Splash.name) {
 
@@ -80,7 +81,32 @@ fun RideShareRoute() {
             }
             composable(ListScreen.Home.name) {
                 println("masuk ke home route")
-                HomeView()
+
+                val homeViewModel: HomeViewModel = viewModel()
+
+                var loggedInUser: User? = null
+
+                homeViewModel.viewModelScope.launch {
+                    loggedInUser = dataStore.getUser.first()!!
+                    if (loggedInUser == null) navController.navigate(ListScreen.Login.name)
+                }
+
+                val loggedInUserObj = loggedInUser?.let { it1 ->
+                    User(
+                        user_id = it1.user_id,
+                        email = loggedInUser!!.email,
+                        password = "",
+                        name = loggedInUser!!.name,
+                        phone = loggedInUser!!.phone,
+                        driver = loggedInUser!!.driver
+                    )
+                }
+
+                if (loggedInUserObj != null && loggedInUserObj.driver.contains("1")) {
+                    HomeView(loggedInUserObj, navController)
+                } else {
+                    navController.navigate(ListScreen.Home.name)
+                }
             }
             composable(ListScreen.Login.name) {
                 val loginViewModel: LoginViewModel = viewModel()
@@ -117,12 +143,42 @@ fun RideShareRoute() {
                         inputDestinationViewModel,
                         navigate = { navController.navigate(ListScreen.RideDetails.name) }
                     )
+                } else {
+                    navController.navigate(ListScreen.Home.name)
                 }
             }
             composable(ListScreen.History.name) {}
             composable(ListScreen.OfferRide.name) {
                 val offerRideDetailsViewModel: OfferRideViewModel = viewModel()
-                OfferRideView(offerRideDetailsViewModel, context)
+
+                var loggedInUser: User? = null
+
+                offerRideDetailsViewModel.viewModelScope.launch {
+                    loggedInUser = dataStore.getUser.first()!!
+                    if (loggedInUser == null) navController.navigate(ListScreen.Login.name)
+                }
+
+                val loggedInUserObj = loggedInUser?.let { it1 ->
+                    User(
+                        user_id = it1.user_id,
+                        email = loggedInUser!!.email,
+                        password = "",
+                        name = loggedInUser!!.name,
+                        phone = loggedInUser!!.phone,
+                        driver = loggedInUser!!.driver
+                    )
+                }
+
+                if (loggedInUserObj != null && loggedInUserObj.driver.contains("1")) {
+                    OfferRideView(
+                        loggedInUserObj,
+                        offerRideDetailsViewModel,
+                        context,
+                        navController
+                    )
+                } else {
+                    navController.navigate(ListScreen.Home.name)
+                }
             }
             composable(ListScreen.RideDetails.name) {
                 RideDetailsView()

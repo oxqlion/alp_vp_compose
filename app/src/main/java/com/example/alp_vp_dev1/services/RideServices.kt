@@ -12,5 +12,5 @@ interface RideServices {
     suspend fun ride(): RideModel
 
     @POST("ride")
-    suspend fun createRide(@Body userId: Int): APIResponse
+    suspend fun createRide(@Body ride: RideModel): APIResponse
 }

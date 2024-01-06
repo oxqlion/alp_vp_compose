@@ -30,9 +30,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.alp_vp_dev1.model.OfferRide
 import com.example.alp_vp_dev1.model.PlacesAutocomplete
 import com.example.alp_vp_dev1.model.RideModel
+import com.example.alp_vp_dev1.repository.RideContainer
+import com.example.alp_vp_dev1.view.ListScreen
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -73,8 +76,8 @@ class OfferRideViewModel : ViewModel() {
     var carType: String? = null
     var carCapacity: String? = null
 
-    private var date: String? = null
-    private var time: String? = null
+    private var selectedDate: String? = null
+    private var selectedTime: String? = null
 
     private var job: Job? = null
 
@@ -192,8 +195,45 @@ class OfferRideViewModel : ViewModel() {
             }
     }
 
-    fun createRide(ride: RideModel) {
+    fun createRide(user_id: Int, navController: NavController) {
+        println("masuk create ride view model")
+        if (standbyName != null && destinationName != null && standbyLatLng != null && destinationLatLng != null) {
 
+            println("create ride viewmodel coordinates found")
+            println("standby name : $standbyName")
+            println("destination name : $destinationName")
+            println("standby latlng : $standbyLatLng")
+            println("destination latlng : $destinationLatLng")
+
+            val newRide = RideModel(
+                user_id = user_id,  // Assuming you have a function to get the current user's ID
+                ride_status = 0,  // Assuming you have a constant for pending status
+                start_location = standbyName ?: "",
+                destination_location = destinationName ?: "",
+                start_lat = standbyLatLng?.latitude ?: 0.0,
+                start_lng = standbyLatLng?.longitude ?: 0.0,
+                destination_lat = destinationLatLng?.latitude ?: 0.0,
+                destination_lng = destinationLatLng?.longitude ?: 0.0,
+                going_date = selectedDate ?: "",
+                going_time = selectedTime ?: "",
+                car_model = carType ?: "",
+                car_capacity = carCapacity ?: ""
+            )
+
+            viewModelScope.launch {
+                println("calling api with data : $newRide")
+                val offeredRide = RideContainer().rideRepositories.createRide(newRide)
+                println("new ride created with response : $offeredRide, trying to redirect ...")
+                if (offeredRide.contains("200")) {
+                    println("response status 200. redirecting ...")
+                    navController.navigate(ListScreen.Home.name)
+                } else {
+                    println("response status create ride is not 200")
+                }
+            }
+        } else {
+            println("create ride viewmodel coordinates not found!")
+        }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -253,6 +293,7 @@ class OfferRideViewModel : ViewModel() {
             selection = CalendarSelection.Date { date ->
                 val formatter = DateTimeFormatter.ofPattern("d MMMM YYYY")
                 val formattedDate = date.format(formatter)
+                selectedDate = formattedDate
                 println("SelectedDate: $date")
             }
         )
@@ -265,6 +306,7 @@ class OfferRideViewModel : ViewModel() {
             ),
             selection = ClockSelection.HoursMinutes { hours, minutes ->
                 println("SelectedTime: $hours:$minutes")
+                selectedTime = "$hours:$minutes"
             }
         )
 
