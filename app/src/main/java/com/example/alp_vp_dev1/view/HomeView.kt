@@ -30,7 +30,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.alp_vp_dev1.R
+import com.example.alp_vp_dev1.model.User
 
 //val inter = FontFamily(
 //    Font(R.font.inter_variable, FontWeight.Normal),
@@ -38,7 +40,10 @@ import com.example.alp_vp_dev1.R
 //)
 
 @Composable
-fun HomeView() {
+fun HomeView(
+    user: User,
+    navController: NavController
+) {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -46,9 +51,18 @@ fun HomeView() {
         verticalArrangement = Arrangement.Center
     ) {
 
-        Button(onClick = {  }) {
+        Button(onClick = { }) {
             Text(text = "clear data store")
         }
+
+        if (user.driver.contains("1")) {
+            Button(onClick = {
+                navController.navigate(ListScreen.OfferRide.name)
+            }) {
+                Text(text = "Offer Ride")
+            }
+        }
+
     }
 }
 

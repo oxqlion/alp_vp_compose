@@ -48,7 +48,7 @@ class LoginViewModel() : ViewModel() {
                     println("user saved to data store")
                     println("saved user object : ${dataStore.getUser.first()}")
                     println("redirecting ...")
-                    navController.navigate(ListScreen.InputDestination.name)
+                    navController.navigate(ListScreen.Home.name)
                 } else println("no user in data store")
             } else {
                 println("wrong password or no user found")

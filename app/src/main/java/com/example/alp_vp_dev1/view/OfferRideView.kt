@@ -59,6 +59,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.alp_vp_dev1.viewmodel.OfferRideViewModel
 import androidx.compose.ui.unit.toSize
+import androidx.navigation.NavController
+import com.example.alp_vp_dev1.model.RideModel
+import com.example.alp_vp_dev1.model.User
 import com.google.type.DateTime
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -76,8 +79,10 @@ import java.time.Clock
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OfferRideView(
+    user: User,
     offerRideViewModel: OfferRideViewModel,
-    context: Context
+    context: Context,
+    navController: NavController
 ) {
     val offerRideUiState by offerRideViewModel.uiState.collectAsState()
     val textFieldSize by remember { mutableStateOf(Size.Zero) }
@@ -373,7 +378,12 @@ fun OfferRideView(
                             .padding(24.dp, 26.dp)
                             .fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00)),
-                        onClick = { /*TODO*/ }
+                        onClick = {
+                            // Insert function
+                            offerRideViewModel.carType = carType
+                            offerRideViewModel.carCapacity = carCapacity
+                            offerRideViewModel.createRide(user.user_id, navController)
+                        }
                     ) {
                         Text(
                             text = "Offer Ride",
