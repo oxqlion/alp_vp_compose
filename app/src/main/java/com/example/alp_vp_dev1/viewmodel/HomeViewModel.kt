@@ -29,6 +29,7 @@ class HomeViewModel() : ViewModel() {
     fun loadRides() {
         viewModelScope.launch {
             try {
+                println("masuk ke load ride viwemodel try")
                 data = RideContainer().rideRepositories.rides()
                 homeUIState = HomeUIState.Success(data)
             } catch (e: Exception) {

@@ -32,7 +32,7 @@ class AuthRepositories(private val authServices: AuthServices) {
         println("masuk create user repo")
         return try {
             val result = authServices.create_user(user)
-
+            println("masuk create user repo after declare val result")
             if (result.status == HttpURLConnection.HTTP_OK) {
                 println("mantap status 200")
                 return result.status.toString()
@@ -43,6 +43,25 @@ class AuthRepositories(private val authServices: AuthServices) {
         } catch (e: Exception) {
             println("Error during create user: ${e.message}")
             "Register failed due to an error"
+        }
+    }
+
+    suspend fun check_user(userId: Int): String {
+        return try {
+            val result = authServices.check_user(userId)
+
+            if (result.status == HttpURLConnection.HTTP_OK) {
+                println("Success: $result")
+                println("${result::class.simpleName}")
+                return "{ $result }" // Return relevant data from the successful response
+            } else {
+                println("Failed: $result")
+                throw Exception("Login failed: ${result.message}") // Re-throw with a more informative message
+            }
+        } catch (e: Exception) {
+            // Handle specific exceptions or provide a generic message
+            println("Error during login: ${e.message}")
+            "Login failed due to an error" // Return a generic error message
         }
     }
 

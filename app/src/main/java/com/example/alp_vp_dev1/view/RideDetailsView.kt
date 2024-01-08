@@ -1,5 +1,6 @@
 package com.example.alp_vp_dev1.view
 
+//noinspection UsingMaterialAndMaterial3Libraries
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -32,13 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.alp_vp_dev1.model.RideModel
+import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -60,6 +56,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.compose.CameraPositionState
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
@@ -74,18 +74,25 @@ fun RideDetailsView(
     val standby = LatLng(ride.start_lat, ride.start_lng)
     val destination = LatLng(ride.destination_lat, ride.destination_lng)
 
-    val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(standby, 15f)
-    }
-    val markerState = rememberMarkerState(
-        position = singapore
-    )
     val standbyState = rememberMarkerState(
         position = standby
     )
     val destinationState = rememberMarkerState(
         position = destination
     )
+
+    val boundsBuilder = LatLngBounds.Builder()
+    boundsBuilder.include(standbyState.position)
+    boundsBuilder.include(destinationState.position)
+
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(standby, 15f)
+    }
+
+    val markerState = rememberMarkerState(
+        position = singapore
+    )
+
 
 //    val sheetState = rememberModalBottomSheetState()
 //    val scope = rememberCoroutineScope()

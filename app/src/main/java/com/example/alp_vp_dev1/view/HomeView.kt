@@ -227,6 +227,7 @@ fun HomeView(
                     LazyColumn(
                         modifier = Modifier
                             .padding(horizontal = 20.dp)
+                            .heightIn(max = 600.dp, min = 600.dp)
                     ) {
                         items(rides) { ride ->
 
@@ -251,38 +252,41 @@ fun HomeView(
                         }
                     }
                 }
-
             }
-            Button(
-                modifier = Modifier
-                    .padding(20.dp, 20.dp, 20.dp, 110.dp)
-                    .height(60.dp)
-                    .fillMaxWidth(),
-                onClick = {
-                    navController.navigate(ListScreen.OfferRide.name)
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFD0FF00)
-                )
-            ) {
-                Row(
+
+            if (user.driver.contains("1")) {
+
+                Button(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(20.dp, 20.dp, 20.dp, 110.dp)
+                        .height(60.dp)
+                        .fillMaxWidth(),
+                    onClick = {
+                        navController.navigate(ListScreen.OfferRide.name)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFD0FF00)
+                    )
                 ) {
-                    Text(
-                        text = "Offer Ride",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                    Spacer(Modifier.width(8.dp))  // Add horizontal spacing
-                    Icon(
-                        imageVector = Icons.Filled.ArrowForward,
-                        contentDescription = "Offer Ride Button",
-                        tint = Color.Black
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Offer Ride",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                        Spacer(Modifier.width(8.dp))  // Add horizontal spacing
+                        Icon(
+                            imageVector = Icons.Filled.ArrowForward,
+                            contentDescription = "Offer Ride Button",
+                            tint = Color.Black
+                        )
+                    }
                 }
             }
         }
@@ -464,7 +468,7 @@ fun HomeCard(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFD0FF00)
                     ),
-                    onClick = { navController.navigate(ListScreen.RideDetails.name+"/"+ride_id) }
+                    onClick = { navController.navigate(ListScreen.RideDetails.name + "/" + ride_id) }
                 ) {
                     Text(
                         text = "Details",
