@@ -15,6 +15,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.alp_vp_dev1.data.DataStoreManager
 import com.example.alp_vp_dev1.data.PropertyLoader
 import com.example.alp_vp_dev1.model.User
+import com.example.alp_vp_dev1.repository.AuthContainer
+import com.example.alp_vp_dev1.repository.AuthRepositories
 import com.example.alp_vp_dev1.viewmodel.CheckUserViewModel
 import com.example.alp_vp_dev1.viewmodel.HomeUIState
 import com.example.alp_vp_dev1.viewmodel.HomeViewModel
@@ -56,7 +58,7 @@ fun RideShareRoute() {
     Scaffold {
         NavHost(
             navController = navController,
-            startDestination = ListScreen.Home.name,
+            startDestination = ListScreen.Splash.name,
         ) {
             composable(ListScreen.Splash.name) {
 
@@ -65,22 +67,29 @@ fun RideShareRoute() {
 
                 val checkUserViewModel: CheckUserViewModel = viewModel()
 
-//                checkUserViewModel.viewModelScope.launch {
-//                    dataStore.clearDataStore()
-//                }
-                checkUserViewModel.viewModelScope.launch {
-                    val userDataFlow: Flow<User?> = dataStore.getUser
-                    userDataFlow.collect() {
-                        if (it == null) {
-                            println("gaada user bro")
-                            navController.navigate(ListScreen.Login.name)
-                        } else {
-                            println("ada user bjir: $it")
-                            println("user data type: ${it::class.simpleName}")
-                            navController.navigate(ListScreen.InputDestination.name)
-                        }
-                    }
+//                val userExist: Int = checkUserViewModel.checkUser(dataStore, navController)
+
+                if (checkUserViewModel.checkUser(dataStore, navController) == 1) {
+                    println("user exist")
+                    navController.navigate(ListScreen.Home.name)
+                } else {
+                    println("there is no user exist in splash route")
+                    navController.navigate(ListScreen.Login.name)
                 }
+
+//                checkUserViewModel.viewModelScope.launch {
+//                    val userDataFlow: Flow<User?> = dataStore.getUser
+//                    userDataFlow.collect() {
+//                        if (it == null) {
+//                            println("gaada user bro")
+//                            navController.navigate(ListScreen.Login.name)
+//                        } else {
+//                            println("ada user bjir: $it")
+//                            println("user data type: ${it::class.simpleName}")
+//                            navController.navigate(ListScreen.InputDestination.name)
+//                        }
+//                    }
+//                }
             }
             composable(ListScreen.Home.name) {
                 println("masuk ke home route")
@@ -94,6 +103,8 @@ fun RideShareRoute() {
                     if (loggedInUser == null) navController.navigate(ListScreen.Login.name)
                 }
 
+                println("logged in user ga null di home route")
+
                 val loggedInUserObj = loggedInUser?.let { it1 ->
                     User(
                         user_id = it1.user_id,
@@ -105,10 +116,11 @@ fun RideShareRoute() {
                     )
                 }
 
-                if (loggedInUserObj != null && loggedInUserObj.driver.contains("1")) {
-
+                if (loggedInUserObj != null) {
+                    println("coba akses homeuistate")
                     when (homeViewModel.homeUIState) {
                         is HomeUIState.Success -> {
+                            println("homeuistate dapet success")
                             HomeView(
                                 loggedInUserObj,
                                 (homeViewModel.homeUIState as HomeUIState.Success).data,
@@ -116,11 +128,15 @@ fun RideShareRoute() {
                             )
                         }
 
-                        is HomeUIState.Loading -> {}
-                        is HomeUIState.Error -> {}
+                        is HomeUIState.Loading -> {
+                            println("homeuistate masih loading...")
+                        }
+                        is HomeUIState.Error -> {
+                            println("homeuistate error..")
+                        }
                     }
                 } else {
-                    navController.navigate(ListScreen.Home.name)
+                    navController.navigate(ListScreen.Register.name)
                 }
             }
             composable(ListScreen.Login.name) {
@@ -152,7 +168,7 @@ fun RideShareRoute() {
                     )
                 }
 
-                if (loggedInUserObj != null && loggedInUserObj.driver.contains("1")) {
+                if (loggedInUserObj != null) {
                     InputDestinationView(
                         loggedInUserObj,
                         inputDestinationViewModel,
@@ -162,7 +178,9 @@ fun RideShareRoute() {
                     navController.navigate(ListScreen.Home.name)
                 }
             }
-            composable(ListScreen.History.name) {}
+            composable(ListScreen.History.name) {
+
+            }
             composable(ListScreen.OfferRide.name) {
                 val offerRideDetailsViewModel: OfferRideViewModel = viewModel()
 
@@ -219,7 +237,7 @@ fun RideShareRoute() {
                     )
                 }
 
-                if (loggedInUserObj != null && loggedInUserObj.driver.contains("1")) {
+                if (loggedInUserObj != null) {
 
                     when (rideDetailsViewModel.rideDetailsUIState) {
                         is RideDetailsUIState.Success -> {

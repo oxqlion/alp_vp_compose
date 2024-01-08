@@ -8,9 +8,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RideContainer {
 
-    private val BASE_URL = "http://192.168.1.20:8080/api/"
+    private val BASE_URL = "https://bddf-182-253-199-42.ngrok-free.app/api/"
 
     private val client = OkHttpClient.Builder()
+        .hostnameVerifier { _, _ -> true }
         .build()
 
     private val retrofit = Retrofit.Builder()
