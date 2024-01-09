@@ -18,6 +18,7 @@ import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.repository.AuthContainer
 import com.example.alp_vp_dev1.repository.AuthRepositories
 import com.example.alp_vp_dev1.viewmodel.CheckUserViewModel
+import com.example.alp_vp_dev1.viewmodel.HistoryUIState
 import com.example.alp_vp_dev1.viewmodel.HistoryViewModel
 import com.example.alp_vp_dev1.viewmodel.HomeUIState
 import com.example.alp_vp_dev1.viewmodel.HomeViewModel
@@ -183,7 +184,50 @@ fun RideShareRoute() {
             }
             composable(ListScreen.History.name) {
                 val historyViewModel: HistoryViewModel = viewModel()
-                HistoryView(historyViewModel, navController)
+
+                var loggedInUser: User? = null
+
+                historyViewModel.viewModelScope.launch {
+                    loggedInUser = dataStore.getUser.first()!!
+                    if (loggedInUser == null) navController.navigate(ListScreen.Login.name)
+                }
+
+                println("logged in user ga null di history route")
+
+                val loggedInUserObj = loggedInUser?.let { it1 ->
+                    User(
+                        user_id = it1.user_id,
+                        email = loggedInUser!!.email,
+                        password = "",
+                        name = loggedInUser!!.name,
+                        phone = loggedInUser!!.phone,
+                        driver = loggedInUser!!.driver
+                    )
+                }
+
+                if (loggedInUserObj != null) {
+                    println("coba akses historyuistate")
+                    when (historyViewModel.historyUIState) {
+                        is HistoryUIState.Success -> {
+                            println("historyuistate dapet success")
+                            historyViewModel.userRides(loggedInUserObj.user_id!!, loggedInUserObj.driver!!)
+                            HomeView(
+                                loggedInUserObj,
+                                (historyViewModel.historyUIState as HistoryUIState.Success).data,
+                                navController
+                            )
+                        }
+
+                        is HistoryUIState.Loading -> {
+                            println("historyuistate masih loading...")
+                        }
+                        is HistoryUIState.Error -> {
+                            println("historyuistate error..")
+                        }
+                    }
+                } else {
+                    navController.navigate(ListScreen.Register.name)
+                }
             }
             composable(ListScreen.OfferRide.name) {
                 val offerRideDetailsViewModel: OfferRideViewModel = viewModel()

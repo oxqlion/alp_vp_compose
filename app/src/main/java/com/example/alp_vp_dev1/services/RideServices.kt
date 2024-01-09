@@ -22,4 +22,7 @@ interface RideServices {
 
     @GET("ride_user")
     suspend fun ride_user(@Query("userId") userId: Int): List<RideModel>
+
+    @GET("ride_driver")
+    suspend fun ride_driver(@Query("userId") userId: Int): List<RideModel>
 }

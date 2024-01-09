@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -50,13 +51,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.alp_vp_dev1.R
+import com.example.alp_vp_dev1.model.RideModel
+import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.viewmodel.HistoryViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HistoryView(
+    user: User,
     historyViewModel: HistoryViewModel,
+    rides: List<RideModel>,
     navController: NavController
 ){
     Scaffold(
@@ -146,123 +153,36 @@ fun HistoryView(
                 )
             }
 
+            val dateFormat = DateTimeFormatter.ofPattern("d MMMM yyyy")
+            val formattedDate = LocalDate.now().format(dateFormat)
+
             LazyVerticalGrid(columns = GridCells.Fixed(1)){
-                item{
+                items(rides){ ride ->
+                    var newDate: String? = null
 
-                }
-            }
-        }
-    }
-    @Composable
-    fun HistoryCard() {
-        ElevatedCard(
-            modifier = Modifier.padding(18.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 18.dp
-            ),
-            colors = CardDefaults.cardColors(Color.White)
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp, 8.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Today, 17:00 WIB",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-
-                    Column {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "L 1782 AB",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            textAlign = TextAlign.End
-                        )
-
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Suzuki Ertiga",
-                            textAlign = TextAlign.End
-                        )
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 5.dp)
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(50.dp)
-                            .fillMaxHeight()
-                            .align(Alignment.CenterVertically),
-                        painter = painterResource(id = R.drawable.baseline_directions_car_24),
-                        contentDescription = "car"
-                    )
-
-                    Image(
-                        modifier = Modifier
-                            .size(30.dp, 120.dp)
-                            .fillMaxHeight()
-                            .align(Alignment.CenterVertically),
-                        painter = painterResource(id = R.drawable.group_63),
-                        contentDescription = "arrow"
-                    )
-
-                    Column(
-                        modifier = Modifier.padding(start = 10.dp)
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .width(140.dp),
-                            text = "CitraLand CBD Boulevard, Made",
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Standby Point",
-                            fontWeight = FontWeight.Light,
-                            fontSize = 11.sp
-                        )
-
-                        Text(
-                            modifier = Modifier
-                                .width(140.dp)
-                                .padding(top = 18.dp),
-                            text = "Jl. Mayjend Jonosewojo No.2",
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Destination",
-                            fontWeight = FontWeight.Light,
-                            fontSize = 11.sp
-                        )
+                    newDate = if (ride.going_date == formattedDate) {
+                        "Today"
+                    } else {
+                        ride.going_date
                     }
 
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .background(Color(0xFFBBFAB0), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 10.dp)
-                            .padding(vertical = 6.dp)
-                            .align(Alignment.Bottom),
-                        text = "Finished",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Right
+                    val dateTime: String = "$newDate, ${ride.going_time}"
+
+                    HistoryCard(
+                        dateTime = dateTime,
+                        standby = ride.start_location,
+                        carPlate = ride.car_license_plate,
+                        carType = ride.car_model,
+                        destination = ride.destination_location,
+                        status = ride.ride_status.toString(),
+                        user = user.driver
                     )
                 }
             }
         }
     }
+
+
     /*
     Box(
         modifier = Modifier
@@ -326,6 +246,199 @@ fun HistoryView(
             }
         }
     }*/
+}
+@Composable
+fun HistoryCard(
+    dateTime: String,
+    standby: String,
+    carPlate: String,
+    carType: String,
+    destination: String,
+    status: String,
+    user: String,
+) {
+    ElevatedCard(
+        modifier = Modifier.padding(18.dp),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 18.dp
+        ),
+        colors = CardDefaults.cardColors(Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp, 8.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = dateTime,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
+
+                Column {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = carPlate,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.End
+                    )
+
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = carType,
+                        textAlign = TextAlign.End
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 5.dp)
+            ) {
+                Image(
+                    modifier = Modifier
+                        .padding(end = 8.dp)
+                        .size(50.dp)
+                        .fillMaxHeight()
+                        .align(Alignment.CenterVertically),
+                    painter = painterResource(id = R.drawable.baseline_directions_car_24),
+                    contentDescription = "car"
+                )
+
+                Image(
+                    modifier = Modifier
+                        .size(30.dp, 120.dp)
+                        .fillMaxHeight()
+                        .align(Alignment.CenterVertically),
+                    painter = painterResource(id = R.drawable.group_63),
+                    contentDescription = "arrow"
+                )
+
+                Column(
+                    modifier = Modifier.padding(start = 10.dp)
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .width(140.dp),
+                        text = standby,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Standby Point",
+                        fontWeight = FontWeight.Light,
+                        fontSize = 11.sp
+                    )
+
+                    Text(
+                        modifier = Modifier
+                            .width(140.dp)
+                            .padding(top = 18.dp),
+                        text = destination,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Destination",
+                        fontWeight = FontWeight.Light,
+                        fontSize = 11.sp
+                    )
+                }
+                if (user.contains("0")) {
+                    if (status.contains("0")) {
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .background(Color(0xFFADD7E8), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 10.dp)
+                                .padding(vertical = 6.dp)
+                                .align(Alignment.Bottom),
+                            text = "Submitted",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Right
+                        )
+                    }
+                    else if (status.contains("1")) {
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .background(Color(0xFFFFA7A6), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 10.dp)
+                                .padding(vertical = 6.dp)
+                                .align(Alignment.Bottom),
+                            text = "Accepted",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Right
+                        )
+                    }
+                    else if (status.contains("2")) {
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .background(Color(0xFFBBFAB0), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 10.dp)
+                                .padding(vertical = 6.dp)
+                                .align(Alignment.Bottom),
+                            text = "Finished",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Right
+                        )
+                    }
+                }
+                else {
+                    if (status.contains("0")) {
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .background(Color(0xFFADD7E8), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 10.dp)
+                                .padding(vertical = 6.dp)
+                                .align(Alignment.Bottom),
+                            text = "Standby",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Right
+                        )
+                    }
+                    else if (status.contains("1")) {
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .background(Color(0xFFFFA7A6), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 10.dp)
+                                .padding(vertical = 6.dp)
+                                .align(Alignment.Bottom),
+                            text = "Active",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Right
+                        )
+                    }
+                    else if (status.contains("2")) {
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 8.dp)
+                                .background(Color(0xFFBBFAB0), RoundedCornerShape(4.dp))
+                                .padding(horizontal = 10.dp)
+                                .padding(vertical = 6.dp)
+                                .align(Alignment.Bottom),
+                            text = "Finished",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Right
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)

@@ -50,10 +50,14 @@ class HistoryViewModel: ViewModel() {
 
     private lateinit var data: List<RideModel>
 
-    fun userRides(userId: Int) {
+    fun userRides(userId: Int, driver: String) {
         viewModelScope.launch {
             try {
                 println("masuk ke load ride viwemodel try")
+                if (driver.contains("0")) {data = RideContainer().rideRepositories.userRides(userId)
+                }else {
+                    data = RideContainer().rideRepositories.driverRides(userId)
+                }
                 data = RideContainer().rideRepositories.userRides(userId)
                 historyUIState = HistoryUIState.Success(data)
             } catch (e: Exception) {
