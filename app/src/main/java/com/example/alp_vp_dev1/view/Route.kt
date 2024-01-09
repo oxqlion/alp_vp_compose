@@ -18,6 +18,7 @@ import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.repository.AuthContainer
 import com.example.alp_vp_dev1.repository.AuthRepositories
 import com.example.alp_vp_dev1.viewmodel.CheckUserViewModel
+import com.example.alp_vp_dev1.viewmodel.HistoryViewModel
 import com.example.alp_vp_dev1.viewmodel.HomeUIState
 import com.example.alp_vp_dev1.viewmodel.HomeViewModel
 import com.example.alp_vp_dev1.viewmodel.InputDestinationUIState
@@ -55,13 +56,13 @@ fun RideShareRoute() {
     val navController = rememberNavController()
     val dataStore = DataStoreManager(LocalContext.current)
     val context = LocalContext.current
-    Places.initialize(context, MAPS_API_KEY)
+    Places.initialize(context, "AIzaSyDQDAkiTRoiD13Q_BgxmG5FRkBgi3fxCb4")
 
 
     Scaffold {
         NavHost(
             navController = navController,
-            startDestination = ListScreen.Splash.name,
+            startDestination = ListScreen.Login.name,
         ) {
             composable(ListScreen.Splash.name) {
 
@@ -194,7 +195,8 @@ fun RideShareRoute() {
                 }
             }
             composable(ListScreen.History.name) {
-
+                val historyViewModel: HistoryViewModel = viewModel()
+                HistoryView(historyViewModel, navController)
             }
             composable(ListScreen.OfferRide.name) {
                 val offerRideDetailsViewModel: OfferRideViewModel = viewModel()

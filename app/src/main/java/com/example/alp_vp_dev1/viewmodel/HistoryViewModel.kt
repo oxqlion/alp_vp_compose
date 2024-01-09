@@ -17,6 +17,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,10 +31,40 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.alp_vp_dev1.R
+import com.example.alp_vp_dev1.model.RideModel
+import com.example.alp_vp_dev1.repository.RideContainer
+import kotlinx.coroutines.launch
+
+sealed interface HistoryUIState {
+    data class Success(val data: List<RideModel>) : HistoryUIState
+    object Error : HistoryUIState
+    object Loading : HistoryUIState
+}
 
 class HistoryViewModel: ViewModel() {
 
+    var historyUIState: HistoryUIState by mutableStateOf(HistoryUIState.Loading)
+        private set
+
+    private lateinit var data: List<RideModel>
+
+    fun userRides(userId: Int) {
+        viewModelScope.launch {
+            try {
+                println("masuk ke load ride viwemodel try")
+                data = RideContainer().rideRepositories.userRides(userId)
+                historyUIState = HistoryUIState.Success(data)
+            } catch (e: Exception) {
+                println("in status success homeviewmodel")
+                println("load rides home viewmodel error : ${e.message}")
+                historyUIState = HistoryUIState.Error
+            }
+        }
+    }
+
+/*
     @Composable
     fun HistoryCard() {
         ElevatedCard(
@@ -134,13 +167,14 @@ class HistoryViewModel: ViewModel() {
                             .padding(vertical = 6.dp)
                             .align(Alignment.Bottom),
                         text = "Finished",
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Right
                     )
                 }
             }
         }
-    }
+    }*/
     @Composable
     fun TopShadow(alpha: Float = 1f, height: Dp = 8.dp) {
         Box(

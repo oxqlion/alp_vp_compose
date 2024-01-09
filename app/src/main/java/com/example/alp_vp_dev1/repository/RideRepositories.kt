@@ -65,6 +65,44 @@ class RideRepositories(private val rideServices: RideServices) {
         }
     }
 
+    suspend fun userRides(userId: Int): List<RideModel> {
+        println("masuk rides repository")
+        try {
+            println("masuk rides repository try")
+            val ridesList = rideServices.ride_user(userId)
+            if (ridesList.isEmpty()) println("rideList di repo empty")
+            val data = mutableListOf<RideModel>()
+
+            for (ride in ridesList) {
+                val newRide = RideModel(
+                    status = ride.status,
+                    message = ride.message,
+                    ride_id = ride.ride_id,
+                    driver_id = ride.driver_id,
+                    ride_status = ride.ride_status,
+                    start_location = ride.start_location,
+                    destination_location = ride.destination_location,
+                    start_lat = ride.start_lat.toDouble(),
+                    start_lng = ride.start_lng.toDouble(),
+                    destination_lat = ride.destination_lat.toDouble(),
+                    destination_lng = ride.destination_lng.toDouble(),
+                    going_date = ride.going_date,
+                    going_time = ride.going_time,
+                    car_model = ride.car_model,
+                    car_capacity = ride.car_capacity
+                )
+                for (entry in data) {
+                    println("entry in repo data : $ride")
+                }
+                data.add(newRide)
+            }
+            return data
+        } catch (e: Exception) {
+            println("rides repository error : ${e.message}")
+            return mutableListOf()
+        }
+    }
+
     suspend fun getRideDetails(rideId: Int): RideDetailsModel {
         println("masuk get ride details repo")
         try {
