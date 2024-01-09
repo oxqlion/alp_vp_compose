@@ -18,5 +18,7 @@ data class RideModel(
     val going_date: String = "",
     val going_time: String = "",
     val car_model: String = "",
-    val car_capacity: String = ""
+    val car_license_plate: String = "",
+    val car_capacity: String = "",
+    val notes:String = ""
 )

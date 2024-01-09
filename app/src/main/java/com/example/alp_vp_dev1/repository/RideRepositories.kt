@@ -1,5 +1,6 @@
 package com.example.alp_vp_dev1.repository
 
+import com.example.alp_vp_dev1.model.RideDetailsModel
 import com.example.alp_vp_dev1.model.RideModel
 import com.example.alp_vp_dev1.services.AuthServices
 import com.example.alp_vp_dev1.services.RideServices
@@ -63,7 +64,7 @@ class RideRepositories(private val rideServices: RideServices) {
         }
     }
 
-    suspend fun getRideDetails(rideId: Int): RideModel {
+    suspend fun getRideDetails(rideId: Int): RideDetailsModel {
         println("masuk get ride details repo")
         try {
             val result = rideServices.getRideDetails(rideId)
@@ -71,13 +72,15 @@ class RideRepositories(private val rideServices: RideServices) {
                 println("error making request. response : ${result.message}")
             }
             println("making new ride model")
-            val newRide = RideModel(
+            val newRide = RideDetailsModel(
                 status = result.status,
                 message = result.message,
                 ride_id = result.ride_id,
                 driver_id = result.driver_id,
+                driver_name = result.driver_name,
                 ride_status = result.ride_status,
                 start_location = result.start_location,
+                passengers = result.passengers,
                 destination_location = result.destination_location,
                 start_lat = result.start_lat.toDouble(),
                 start_lng = result.start_lng.toDouble(),
@@ -86,7 +89,9 @@ class RideRepositories(private val rideServices: RideServices) {
                 going_date = result.going_date,
                 going_time = result.going_time,
                 car_model = result.car_model,
-                car_capacity = result.car_capacity
+                car_license_plate = result.car_license_plate,
+                car_capacity = result.car_capacity,
+                notes = result.notes
             )
 
             println("new ride model created : $newRide")

@@ -75,6 +75,8 @@ class OfferRideViewModel : ViewModel() {
 
     var carType: String? = null
     var carCapacity: String? = null
+    var carLicensePlate: String? = null
+    var notes: String? = null
 
     private var selectedDate: String? = null
     private var selectedTime: String? = null
@@ -217,7 +219,9 @@ class OfferRideViewModel : ViewModel() {
                 going_date = selectedDate ?: "",
                 going_time = selectedTime ?: "",
                 car_model = carType ?: "",
-                car_capacity = carCapacity ?: ""
+                car_license_plate = carLicensePlate ?: "",
+                car_capacity = carCapacity ?: "",
+                notes = notes ?: ""
             )
 
             viewModelScope.launch {

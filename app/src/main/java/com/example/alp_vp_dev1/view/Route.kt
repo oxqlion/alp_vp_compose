@@ -25,6 +25,7 @@ import com.example.alp_vp_dev1.viewmodel.LoginViewModel
 import com.example.alp_vp_dev1.viewmodel.OfferRideViewModel
 import com.example.alp_vp_dev1.viewmodel.PassengerRideDetailsUIState
 import com.example.alp_vp_dev1.viewmodel.PassengerRideDetailsViewModel
+import com.example.alp_vp_dev1.viewmodel.ProfileViewModel
 import com.example.alp_vp_dev1.viewmodel.RegisterViewModel
 import com.example.alp_vp_dev1.viewmodel.RideDetailsUIState
 import com.example.alp_vp_dev1.viewmodel.RideDetailsViewModel
@@ -42,7 +43,8 @@ enum class ListScreen() {
     Register,
     InputDestination,
     History,
-    RideDetails
+    RideDetails,
+    Profile
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -253,6 +255,10 @@ fun RideShareRoute() {
                 } else {
                     navController.navigate(ListScreen.Home.name)
                 }
+            }
+            composable(ListScreen.Profile.name) {
+                val profileViewModel: ProfileViewModel = viewModel()
+                ProfileView(navController, dataStore, profileViewModel)
             }
         }
     }

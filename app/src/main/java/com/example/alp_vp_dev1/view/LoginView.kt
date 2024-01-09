@@ -123,6 +123,12 @@ fun LoginView(
                     Text(text = "Login")
                 }
 
+                Button(onClick = {
+                    navController.navigate(ListScreen.Register.name)
+                }) {
+                    Text(text = "Create Account")
+                }
+
             }
         }
     )
