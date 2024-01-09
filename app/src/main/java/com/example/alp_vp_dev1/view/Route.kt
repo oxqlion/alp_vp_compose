@@ -20,6 +20,7 @@ import com.example.alp_vp_dev1.repository.AuthRepositories
 import com.example.alp_vp_dev1.viewmodel.CheckUserViewModel
 import com.example.alp_vp_dev1.viewmodel.HomeUIState
 import com.example.alp_vp_dev1.viewmodel.HomeViewModel
+import com.example.alp_vp_dev1.viewmodel.InputDestinationUIState
 import com.example.alp_vp_dev1.viewmodel.InputDestinationViewModel
 import com.example.alp_vp_dev1.viewmodel.LoginViewModel
 import com.example.alp_vp_dev1.viewmodel.OfferRideViewModel
@@ -133,6 +134,7 @@ fun RideShareRoute() {
                         is HomeUIState.Loading -> {
                             println("homeuistate masih loading...")
                         }
+
                         is HomeUIState.Error -> {
                             println("homeuistate error..")
                         }
@@ -149,9 +151,11 @@ fun RideShareRoute() {
                 val registerViewModel: RegisterViewModel = viewModel()
                 RegisterView(registerViewModel = registerViewModel, navController, dataStore)
             }
-            composable(ListScreen.InputDestination.name) {
+            composable(ListScreen.InputDestination.name + "/{rideId}") {
                 val inputDestinationViewModel: InputDestinationViewModel = viewModel()
-
+                inputDestinationViewModel.joinRideId(
+                    it.arguments?.getString("rideId")!!.toInt()
+                )
                 var loggedInUser: User? = null
 
                 inputDestinationViewModel.viewModelScope.launch {
@@ -171,13 +175,22 @@ fun RideShareRoute() {
                 }
 
                 if (loggedInUserObj != null) {
-                    InputDestinationView(
-                        loggedInUserObj,
-                        inputDestinationViewModel,
-                        navigate = { navController.navigate(ListScreen.RideDetails.name) }
-                    )
+                    when (inputDestinationViewModel.inputDestinationUIState) {
+                        is InputDestinationUIState.Success -> {
+                            println("input destinatoin is success in route")
+                            InputDestinationView(
+                                loggedInUserObj,
+                                inputDestinationViewModel,
+                                navController,
+                                context,
+                                (inputDestinationViewModel.inputDestinationUIState as InputDestinationUIState.Success).data,
+                            )
+                        }
+                        is InputDestinationUIState.Error -> {}
+                        is InputDestinationUIState.Loading -> {}
+                    }
                 } else {
-                    navController.navigate(ListScreen.Home.name)
+                    navController.navigate(ListScreen.Login.name)
                 }
             }
             composable(ListScreen.History.name) {

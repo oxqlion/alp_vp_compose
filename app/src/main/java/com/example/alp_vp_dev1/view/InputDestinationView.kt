@@ -1,12 +1,20 @@
 package com.example.alp_vp_dev1.view
 
+import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -19,6 +27,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -38,10 +50,24 @@ import com.example.alp_vp_dev1.viewmodel.InputDestinationViewModel
 fun InputDestinationView(
     user: User,
     inputDestinationViewModel: InputDestinationViewModel,
-    navigate: () -> Unit
+    navController: NavController,
+    context: Context,
+    rideId: Int
 ) {
 
     val inputDestinationUiState by inputDestinationViewModel.uiState.collectAsState()
+
+    var pickUp by remember {
+        mutableStateOf("")
+    }
+
+    var destination by remember {
+        mutableStateOf("")
+    }
+
+    var capacity by remember {
+        mutableStateOf("")
+    }
 
     Column(
         modifier = Modifier
@@ -51,17 +77,23 @@ fun InputDestinationView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 25.dp, top = 25.dp, end = 25.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
                 imageVector = Icons.Filled.KeyboardBackspace,
-                contentDescription = "Back"
+                contentDescription = "Back",
+                modifier = Modifier
+                    .clickable {
+                        navController.popBackStack()
+                    }
+                    .size(28.dp)
             )
 
             Text(
                 text = "Ride Destination",
-                fontWeight = FontWeight.Bold,
-                fontSize = 25.sp
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 24.sp
             )
         }
 
@@ -77,129 +109,209 @@ fun InputDestinationView(
         Column(
             modifier = Modifier
                 .padding(top = 25.dp)
-                .fillMaxWidth()
-                .background(Color(0XFFFFFFFF), RoundedCornerShape(25.dp, 25.dp, 0.dp, 0.dp))
+                .fillMaxSize()
+                .background(Color(0XFFFFFFFF), RoundedCornerShape(25.dp, 25.dp, 0.dp, 0.dp)),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                modifier = Modifier
-                    .padding(start = 24.dp, top = 28.dp)
-                    .fillMaxWidth(),
-                text = "Input Pick Up Point",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-
-            inputDestinationViewModel.TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                value = inputDestinationUiState.pickUpPoint,
-                onValueChanged = { inputDestinationUiState.pickUpPoint = it },
-                text = "Your pick up point ...",
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            Text(
-                modifier = Modifier
-                    .padding(start = 24.dp, top = 24.dp)
-                    .fillMaxWidth(),
-                text = "Input Destination Point",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-
-            inputDestinationViewModel.TextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                value = inputDestinationUiState.destinationPoint,
-                onValueChanged = { inputDestinationUiState.destinationPoint = it },
-                text = "Your destination point ...",
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                )
-            )
-
-            Text(
-                modifier = Modifier
-                    .padding(start = 24.dp, top = 24.dp)
-                    .fillMaxWidth(),
-                text = "Total Passenger",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-
-            inputDestinationViewModel.NumField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                value = inputDestinationUiState.totalPassenger,
-                onValueChanged = { inputDestinationUiState.totalPassenger = it },
-                text = "0",
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Next
-                )
-            )
-        }
-
-        Surface {
             Column(
                 modifier = Modifier
-                    .padding(top = 34.dp)
-                    .fillMaxSize()
+                    .fillMaxWidth()
             ) {
-                inputDestinationViewModel.TopShadow(alpha = .15f, height = 18.dp)
 
-                inputDestinationViewModel.PromoField(
+                Text(
+                    modifier = Modifier
+                        .padding(start = 24.dp, top = 24.dp)
+                        .fillMaxWidth(),
+                    text = "Input Pick Up Point",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+
+                inputDestinationViewModel.TextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 24.dp, top = 18.dp, end = 24.dp, bottom = 8.dp),
-                    value = inputDestinationUiState.promo,
-                    onValueChanged = { inputDestinationUiState.promo = it },
-                    text = "Use Promo Code",
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                    value = pickUp,
+                    onValueChanged = {
+                        inputDestinationViewModel.searchPickupPlace(it, context)
+                        pickUp = it
+                    },
+                    text = "Your destination point ...",
                     keyboardOptions = KeyboardOptions.Default.copy(
                         keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Next
                     )
                 )
 
-                Row(
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp, 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(horizontal = 16.dp)
+                        .heightIn(max = 200.dp)
                 ) {
-                    Text(
-                        text = "Total : ",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Text(
-                        text = "Rp 12.000",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    items(inputDestinationViewModel.pickUpLocationAutoFill) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 6.dp)
+                                .clickable {
+                                    pickUp = it.address
+                                    inputDestinationViewModel.pickUpName = it.address
+                                    inputDestinationViewModel.getPickUpPlaceDetails(it, context)
+                                    inputDestinationViewModel.pickUpLocationAutoFill.clear()
+                                }
+                        ) {
+                            Text(
+                                text = it.address,
+                                modifier = Modifier
+                                    .padding(12.dp)
+                            )
+                        }
+                    }
                 }
 
-                Button(
+                Text(
                     modifier = Modifier
-                        .padding(24.dp, 8.dp)
+                        .padding(start = 24.dp, top = 24.dp)
                         .fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00)),
-                    onClick = { navigate() }
-                ) {
-                    Text(
-                        text = "Join Ride",
-                        color = Color.Black,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold
+                    text = "Input Destination Point",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+
+                inputDestinationViewModel.TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                    value = destination,
+                    onValueChanged = {
+                        inputDestinationViewModel.searchDestinationPlace(it, context)
+                        destination = it
+                    },
+                    text = "Your destination point ...",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
                     )
+                )
+
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .heightIn(max = 200.dp)
+                ) {
+                    items(inputDestinationViewModel.destinationLocationAutoFill) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 6.dp)
+                                .clickable {
+                                    destination = it.address
+                                    inputDestinationViewModel.destinationName = it.address
+                                    inputDestinationViewModel.getDestinationPlaceDetails(
+                                        it,
+                                        context
+                                    )
+                                    inputDestinationViewModel.destinationLocationAutoFill.clear()
+                                }
+                        ) {
+                            Text(
+                                text = it.address,
+                                modifier = Modifier
+                                    .padding(12.dp)
+                            )
+                        }
+                    }
+                }
+
+                Text(
+                    modifier = Modifier
+                        .padding(start = 24.dp, top = 24.dp)
+                        .fillMaxWidth(),
+                    text = "Total Passenger",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+
+                inputDestinationViewModel.NumField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                    value = capacity,
+                    onValueChanged = {
+                        capacity = it
+                        inputDestinationViewModel.capacity = it.toInt()
+                    },
+                    text = "Capacity",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    )
+                )
+            }
+
+            Surface {
+                Column(
+                    modifier = Modifier
+//                        .padding(top = 34.dp)
+//                        .fillMaxSize()
+                ) {
+                    inputDestinationViewModel.TopShadow(alpha = .15f, height = 18.dp)
+
+                    inputDestinationViewModel.PromoField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 24.dp, top = 18.dp, end = 24.dp, bottom = 8.dp),
+                        value = inputDestinationUiState.promo,
+                        onValueChanged = { inputDestinationUiState.promo = it },
+                        text = "Use Promo Code",
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        )
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp, 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Total : ",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Text(
+                            text = "Rp 12.000",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Button(
+                        modifier = Modifier
+                            .padding(24.dp, 8.dp)
+                            .fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00)),
+                        onClick = {
+                            println("button join ride di input destination di klik")
+
+                            inputDestinationViewModel.rideIdnya = rideId
+                            inputDestinationViewModel.userId = user.user_id
+
+                            inputDestinationViewModel.insertPassengerUserRide(navController)
+
+//                            navController.navigate(ListScreen.Home.name)
+                        }
+                    ) {
+                        Text(
+                            text = "Join Ride",
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
             }
         }
