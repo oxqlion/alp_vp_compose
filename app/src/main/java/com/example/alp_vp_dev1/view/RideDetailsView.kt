@@ -22,6 +22,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MyLocation
@@ -42,12 +43,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.createBitmap
 import androidx.navigation.NavController
 import com.example.alp_vp_dev1.model.RideDetailsModel
 import com.example.alp_vp_dev1.model.RideModel
@@ -61,6 +65,8 @@ import com.google.maps.android.compose.rememberMarkerState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.compose.CameraPositionState
 
@@ -119,7 +125,7 @@ fun RideDetailsView(
             cameraPositionState = cameraPositionState
         ) {
             Marker(
-                state = standbyState
+                state = standbyState,
             )
             Marker(
                 state = destinationState
@@ -238,7 +244,10 @@ fun RideDetailsView(
                 .fillMaxWidth()
         ) {
             Button(
-                onClick = { },
+                onClick = {
+                    println("button ke input destination di ride details view clicked")
+                    navController.navigate(ListScreen.InputDestination.name + "/" + ride.ride_id )
+                },
                 modifier = Modifier
                     .padding(16.dp)
                     .height(48.dp)

@@ -1,5 +1,6 @@
 package com.example.alp_vp_dev1.repository
 
+import com.example.alp_vp_dev1.model.PassengerUserRide
 import com.example.alp_vp_dev1.model.RideDetailsModel
 import com.example.alp_vp_dev1.model.RideModel
 import com.example.alp_vp_dev1.services.AuthServices
@@ -137,6 +138,42 @@ class RideRepositories(private val rideServices: RideServices) {
             return newRide
         } catch (e: Exception) {
             println("error get ride details repo : $e")
+            throw e
+        }
+    }
+
+    suspend fun joinRide(rideId: Int): String {
+        println("coba get ride id di join ride repo")
+        try {
+            val result = rideServices.joinRide(rideId)
+            if (result.status != 200) {
+                println("error making request to get ride id in repo. response : ${result.message}")
+                throw Exception("get ride id in repo status not 200 : ${result.message}")
+            } else {
+                return result.ride_id.toString()
+            }
+        } catch (e: Exception) {
+            "error ga dapet ride id : ${e.message}"
+            throw e
+        }
+    }
+
+    suspend fun createUserRide(userRide: PassengerUserRide): String {
+        var response: String? = null
+        try {
+            println("masuk ke try crate user ride repo")
+            val result = rideServices.createUserRide(userRide)
+            response = result.status.toString()
+
+            if (result.status == HttpURLConnection.HTTP_OK) {
+                println("response status create user ride repo 200")
+                return result.status.toString()
+            } else {
+                println("reponse status create user ride repo bukan 200: ${result.message}")
+                throw Exception("create ride failed: ${result.message}")
+            }
+        } catch (e: Exception) {
+            "exception error in create user ride repository : ${e.message}"
             throw e
         }
     }
