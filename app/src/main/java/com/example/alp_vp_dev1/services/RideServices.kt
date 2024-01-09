@@ -7,6 +7,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface RideServices {
 
@@ -18,4 +19,7 @@ interface RideServices {
 
     @POST("ride")
     suspend fun createRide(@Body ride: RideModel): APIResponse
+
+    @GET("ride_user")
+    suspend fun ride_user(@Query("userId") userId: Int): List<RideModel>
 }
