@@ -5,12 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.alp_vp_dev1.model.RideDetailsModel
 import com.example.alp_vp_dev1.model.RideModel
 import com.example.alp_vp_dev1.repository.RideContainer
 import kotlinx.coroutines.launch
 
 sealed interface RideDetailsUIState {
-    data class Success(val data: RideModel) : RideDetailsUIState
+    data class Success(val data: RideDetailsModel) : RideDetailsUIState
     object Error : RideDetailsUIState
     object Loading : RideDetailsUIState
 }
@@ -20,7 +21,7 @@ class RideDetailsViewModel() : ViewModel() {
     var rideDetailsUIState: RideDetailsUIState by mutableStateOf(RideDetailsUIState.Loading)
         private set
 
-    private lateinit var data: RideModel
+    private lateinit var data: RideDetailsModel
 
     fun loadRideDetails(rideId: Int) {
         viewModelScope.launch {

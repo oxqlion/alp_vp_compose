@@ -4,6 +4,7 @@ package com.example.alp_vp_dev1.view
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -46,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.alp_vp_dev1.model.RideDetailsModel
 import com.example.alp_vp_dev1.model.RideModel
 import com.google.android.gms.maps.CameraUpdate
 import com.google.android.gms.maps.model.CameraPosition
@@ -65,7 +69,7 @@ import com.google.maps.android.compose.CameraPositionState
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RideDetailsView(
-    ride: RideModel,
+    ride: RideDetailsModel,
     navController: NavController
 ) {
 
@@ -141,7 +145,7 @@ fun RideDetailsView(
                 Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
             }
             IconButton(
-                onClick = {  },
+                onClick = { },
                 modifier = Modifier
                     .padding(24.dp)
                     .size(36.dp)
@@ -161,6 +165,7 @@ fun RideDetailsView(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .padding(24.dp, 0.dp, 24.dp, 100.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
                     Text(
                         text = "Ride Details",
@@ -173,13 +178,42 @@ fun RideDetailsView(
                     )
                     BottomSheetRideStatus(1)
                     DriverDetails(
-                        driverName = "Tri Winarno",
+                        driverName = ride.driver_name,
                         rating = 4.7f,
                         vehicleDetails = ride.car_model,
-                        licensePlate = "L 8888 AB"
+                        licensePlate = ride.car_license_plate
                     )
 
-                    PassengerDetails(passengers = 3, capacity = 7)
+                    Divider(
+                        color = Color.LightGray,
+                        thickness = 1.dp,
+                        modifier = Modifier
+                            .padding(0.dp, 24.dp)
+                    )
+
+                    Column {
+                        Text(
+                            text = "Notes : ",
+                            color = Color.Black,
+                            modifier = Modifier
+                                .padding(0.dp, 4.dp),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = ride.notes,
+                            color = Color.Black,
+//                            modifier = Modifier
+//                                .padding(0.dp, 2.dp),
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    PassengerDetails(
+                        passengers = ride.passengers,
+                        capacity = ride.car_capacity.toInt()
+                    )
 
                     Divider(
                         color = Color.LightGray,

@@ -132,33 +132,63 @@ fun HomeView(
                     .shadow(48.dp)
                     .clip(RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp))
             ) {
-                pages.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        selected = selectedItemByIndex == index,
-                        onClick = {
-                            navController.navigate(ListScreen.Home.name)
-                        },
-                        icon = {
-                            BadgedBox(
-                                badge = {
-                                    if (item.hasNews) {
-                                        Badge()
-                                    }
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = if (index == selectedItemByIndex) {
-                                        item.selectedIcon
-                                    } else item.unselectedIcon,
-                                    contentDescription = item.title
-                                )
-                            }
-                        },
-                        label = {
-                            Text(text = item.title)
-                        },
-                    )
-                }
+                NavigationBarItem(
+                    selected = true,
+                    onClick = {
+                        navController.navigate(ListScreen.Home.name)
+                    },
+                    icon = {
+                        BadgedBox(
+                            badge = {  }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Home,
+                                contentDescription = "Home"
+                            )
+                        }
+                    },
+                    label = {
+                        Text(text = "Home")
+                    },
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {
+                        navController.navigate(ListScreen.History.name)
+                    },
+                    icon = {
+                        BadgedBox(
+                            badge = { }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.DirectionsCar,
+                                contentDescription = "History"
+                            )
+                        }
+                    },
+                    label = {
+                        Text(text = "History")
+                    },
+                )
+                NavigationBarItem(
+                    selected = false,
+                    onClick = {
+                        navController.navigate(ListScreen.Profile.name)
+                    },
+                    icon = {
+                        BadgedBox(
+                            badge = {  }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.AccountCircle,
+                                contentDescription = "Profile"
+                            )
+                        }
+                    },
+                    label = {
+                        Text(text = "Profile")
+                    },
+                )
             }
         }
     ) {

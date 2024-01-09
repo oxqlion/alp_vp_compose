@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,8 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardBackspace
 import androidx.compose.material3.Button
@@ -100,13 +104,22 @@ fun OfferRideView(
         mutableStateOf("")
     }
 
+    var carLicensePlate by remember {
+        mutableStateOf("")
+    }
+
+    var notes by remember {
+        mutableStateOf("")
+    }
+
     Column(
         modifier = Modifier
+            .fillMaxSize()
             .background(Color(0xFFD0FF00))
+            .verticalScroll(rememberScrollState())
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
                 .height(80.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -131,9 +144,11 @@ fun OfferRideView(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White, RoundedCornerShape(25.dp, 25.dp, 0.dp, 0.dp)),
-            verticalArrangement = Arrangement.SpaceBetween
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Column {
+            Column(
+                modifier = Modifier
+            ) {
                 Text(
                     modifier = Modifier
                         .padding(start = 24.dp, top = 28.dp)
@@ -320,7 +335,7 @@ fun OfferRideView(
                     ) {
                         OutlinedTextField(
                             modifier = Modifier
-                                .width(100.dp),
+                                .width(110.dp),
                             value = carCapacity,
                             onValueChange = { carCapacity = it },
                             label = { Text(text = "Capacity") },
@@ -362,36 +377,98 @@ fun OfferRideView(
 //                        }
                     }
                 }
-            }
 
-            Surface {
+                Text(
+                    modifier = Modifier
+                        .padding(start = 18.dp, top = 24.dp)
+                        .fillMaxWidth(),
+                    text = "Car License Plate Number",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+
                 Column(
                     modifier = Modifier
-//                        .padding(top = 40.dp)
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
                 ) {
-                    offerRideViewModel.TopShadow(alpha = .15f, height = 18.dp)
-
-                    Button(
+                    OutlinedTextField(
                         modifier = Modifier
-                            .padding(24.dp, 26.dp)
-                            .fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00)),
-                        onClick = {
-                            // Insert function
-                            offerRideViewModel.carType = carType
-                            offerRideViewModel.carCapacity = carCapacity
-                            offerRideViewModel.createRide(user.user_id, navController)
-                        }
-                    ) {
-                        Text(
-                            text = "Offer Ride",
-                            color = Color.Black,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                            .fillMaxWidth()
+                            .padding(horizontal = 0.dp, vertical = 8.dp),
+                        value = carLicensePlate,
+                        onValueChange = {
+                            carLicensePlate = it
+                        },
+                        label = { Text(text = "Car License Plate Number") },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color(0xFFD0FF00),
+                            unfocusedBorderColor = Color(0xFFD0FF00)
+                        ),
+                        shape = RoundedCornerShape(15.dp)
+                    )
+                }
+
+                Text(
+                    modifier = Modifier
+                        .padding(start = 18.dp, top = 24.dp)
+                        .fillMaxWidth(),
+                    text = "Add notes for this ride",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp, vertical = 8.dp)
+                ) {
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 0.dp, vertical = 8.dp),
+                        value = notes,
+                        onValueChange = {
+                            notes = it
+                        },
+                        label = { Text(text = "Notes") },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = Color(0xFFD0FF00),
+                            unfocusedBorderColor = Color(0xFFD0FF00)
+                        ),
+                        shape = RoundedCornerShape(15.dp)
+                    )
+                }
+            }
+        }
+        Surface {
+            Column(
+                modifier = Modifier
+//                        .padding(top = 40.dp)
+                    .fillMaxWidth()
+                    .background(Color.White)
+            ) {
+                offerRideViewModel.TopShadow(alpha = .15f, height = 18.dp)
+
+                Button(
+                    modifier = Modifier
+                        .padding(24.dp, 26.dp)
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00)),
+                    onClick = {
+                        // Insert function
+                        offerRideViewModel.carType = carType
+                        offerRideViewModel.carCapacity = carCapacity
+                        offerRideViewModel.carLicensePlate = carLicensePlate
+                        offerRideViewModel.notes = notes
+                        offerRideViewModel.createRide(user.user_id, navController)
                     }
+                ) {
+                    Text(
+                        text = "Offer Ride",
+                        color = Color.Black,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }
