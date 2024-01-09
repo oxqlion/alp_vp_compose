@@ -33,6 +33,7 @@ class HomeViewModel() : ViewModel() {
                 data = RideContainer().rideRepositories.rides()
                 homeUIState = HomeUIState.Success(data)
             } catch (e: Exception) {
+                println("in status success homeviewmodel")
                 println("load rides home viewmodel error : ${e.message}")
                 homeUIState = HomeUIState.Error
             }
