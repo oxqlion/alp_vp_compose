@@ -1,0 +1,32 @@
+package com.example.alp_vp_dev1.model
+
+data class HistoryModel(
+    val car_capacity: String = "",
+    val car_license_plate: String = "",
+    val car_model: String = "",
+    val destination_lat: Double = 0.0,
+    val destination_lng: Double = 0.0,
+    val destination_location: String = "",
+    val driver_id: Int = -1,
+    val driver_status: String = "",
+    val going_date: String = "",
+    val going_time: String = "",
+    val notes: String = "",
+    val passanger_id: Int = -1,
+    val passenger_destination_address: String = "",
+    val passenger_destination_lat: Double = 0.0,
+    val passenger_destination_lng: Double = 0.0,
+    val passenger_pickup_address: String = "",
+    val passenger_pickup_lat: Double = 0.0,
+    val passenger_pickup_lng: Double = 0.0,
+    val passenger_status: String = "",
+    val price: Int = -1,
+    val promo_id: Int = -1,
+    val review: Any = "",
+    val ride_id: Int = -1,
+    val ride_status: String = "0",
+    val start_lat: Double = 0.0,
+    val start_lng: Double = 0.0,
+    val start_location: String = "",
+    val ur_id: Int = -1
+)
