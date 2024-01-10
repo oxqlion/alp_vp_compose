@@ -154,7 +154,8 @@ fun HomeView(
                 NavigationBarItem(
                     selected = false,
                     onClick = {
-                        navController.navigate(ListScreen.History.name)
+                        println("from home view navigating to history with user id : ${user.user_id}")
+                        navController.navigate(ListScreen.History.name + "/" + user.user_id)
                     },
                     icon = {
                         BadgedBox(

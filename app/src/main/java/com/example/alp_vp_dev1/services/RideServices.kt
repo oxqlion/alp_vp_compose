@@ -1,6 +1,7 @@
 package com.example.alp_vp_dev1.services
 
 import com.example.alp_vp_dev1.model.APIResponse
+import com.example.alp_vp_dev1.model.HistoryModel
 import com.example.alp_vp_dev1.model.InputDestinationRideId
 import com.example.alp_vp_dev1.model.PassengerUserRide
 import com.example.alp_vp_dev1.model.RideDetailsModel
@@ -27,6 +28,6 @@ interface RideServices {
 
     @POST("ur")
     suspend fun createUserRide(@Body userRide: PassengerUserRide): APIResponse
-    @GET("ride_user")
-    suspend fun ride_user(@Query("userId") userId: Int): List<RideModel>
+    @GET("ride_user/{userId}")
+    suspend fun userRides(@Path("userId") userId: Int): List<HistoryModel>
 }
