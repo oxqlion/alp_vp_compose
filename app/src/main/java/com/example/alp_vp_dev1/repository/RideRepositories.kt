@@ -1,5 +1,6 @@
 package com.example.alp_vp_dev1.repository
 
+import com.example.alp_vp_dev1.model.HistoryModel
 import com.example.alp_vp_dev1.model.PassengerUserRide
 import com.example.alp_vp_dev1.model.RideDetailsModel
 import com.example.alp_vp_dev1.model.RideModel
@@ -16,7 +17,7 @@ class RideRepositories(private val rideServices: RideServices) {
 
             if (result.status == HttpURLConnection.HTTP_OK) {
                 println("mantap status create ride repositories 200")
-                return result.status.toString()
+                return "${result.status}, ${result.ride_id}"
             } else {
                 println("create ride repositories else gagal")
                 throw Exception("create ride failed: ${result.message}")
@@ -65,31 +66,49 @@ class RideRepositories(private val rideServices: RideServices) {
         }
     }
 
-    suspend fun userRides(userId: Int): List<RideModel> {
-        println("masuk rides repository")
+    suspend fun userRides(userId: Int): List<HistoryModel> {
+        println("masuk userrides repository")
         try {
-            println("masuk rides repository try")
-            val ridesList = rideServices.ride_user(userId)
-            if (ridesList.isEmpty()) println("rideList di repo empty")
-            val data = mutableListOf<RideModel>()
+            println("masuk userrides repository try user id : $userId")
+            val ridesList = rideServices.userRides(userId)
+            if (ridesList.isEmpty()) {
+                println("user rideList di repo empty : $ridesList")
+                throw Exception("user rideList di repo empty : $ridesList")
+            }
+            val data = mutableListOf<HistoryModel>()
 
             for (ride in ridesList) {
-                val newRide = RideModel(
-                    status = ride.status,
-                    message = ride.message,
+                val newRide = HistoryModel(
+                    driver_status = ride.driver_status,
+                    passanger_id = ride.passanger_id,
+                    passenger_destination_address = ride.passenger_destination_address,
+                    passenger_destination_lat = ride.passenger_destination_lat,
+                    passenger_destination_lng = ride.passenger_destination_lng,
+                    passenger_pickup_address = ride.passenger_pickup_address,
+                    passenger_pickup_lat = ride.passenger_pickup_lat,
+                    passenger_pickup_lng = ride.passenger_pickup_lng,
+                    passenger_status = ride.passenger_status,
+                    price = ride.price,
+                    promo_id = ride.promo_id,
+                    review = ride.review ?: "No review yet",
                     ride_id = ride.ride_id,
-                    driver_id = ride.driver_id,
-                    ride_status = ride.ride_status,
-                    start_location = ride.start_location,
-                    destination_location = ride.destination_location,
-                    start_lat = ride.start_lat.toDouble(),
-                    start_lng = ride.start_lng.toDouble(),
-                    destination_lat = ride.destination_lat.toDouble(),
-                    destination_lng = ride.destination_lng.toDouble(),
-                    going_date = ride.going_date,
-                    going_time = ride.going_time,
-                    car_model = ride.car_model,
-                    car_capacity = ride.car_capacity
+
+                    // Missing parameters (replace placeholders with actual values):
+                    car_capacity = ride.car_capacity, // Example placeholder
+                    car_license_plate = ride.car_license_plate, // Example placeholder
+                    car_model = ride.car_model, // Example placeholder
+                    destination_lat = ride.passenger_destination_lat, // Assuming same as passenger destination
+                    destination_lng = ride.passenger_destination_lng, // Assuming same as passenger destination
+                    destination_location = ride.passenger_destination_address, // Assuming same as passenger destination
+                    driver_id = ride.driver_id, // Example placeholder
+                    going_date = ride.going_date, // Example placeholder
+                    going_time = ride.going_time, // Example placeholder
+                    notes = "", // Example placeholder
+                    ride_status = ride.ride_status, // Example placeholder
+                    start_lat = ride.passenger_pickup_lat, // Assuming same as passenger pickup
+                    start_lng = ride.passenger_pickup_lng, // Assuming same as passenger pickup
+                    start_location = ride.passenger_pickup_address, // Assuming same as passenger pickup
+                    ur_id = 456 // Example placeholder
                 )
                 for (entry in data) {
                     println("entry in repo data : $ride")

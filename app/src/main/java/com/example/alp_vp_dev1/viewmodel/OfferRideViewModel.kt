@@ -32,6 +32,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.alp_vp_dev1.model.OfferRide
+import com.example.alp_vp_dev1.model.PassengerUserRide
 import com.example.alp_vp_dev1.model.PlacesAutocomplete
 import com.example.alp_vp_dev1.model.RideModel
 import com.example.alp_vp_dev1.repository.RideContainer
@@ -228,7 +229,22 @@ class OfferRideViewModel : ViewModel() {
                 println("calling api with data : $newRide")
                 val offeredRide = RideContainer().rideRepositories.createRide(newRide)
                 println("new ride created with response : $offeredRide, trying to redirect ...")
-                if (offeredRide.contains("200")) {
+
+                val objToURTable = PassengerUserRide(
+                    passanger_id = user_id.toString(),
+                    ride_id = offeredRide.substringAfter(","),
+                    passenger_pickup_address = standbyName ?: "",
+                    passenger_destination_address = destinationName ?: "",
+                    passenger_pickup_lat = standbyLatLng?.latitude ?: 0.0,
+                    passenger_pickup_lng = standbyLatLng?.longitude ?: 0.0,
+                    passenger_destination_lat = destinationLatLng?.latitude ?: 0.0,
+                    passenger_destination_lng = destinationLatLng?.longitude ?: 0.0,
+                )
+
+                val addToURTable = RideContainer().rideRepositories.createUserRide(objToURTable)
+                println("new UR entry created with response : $addToURTable, trying to redirect ...")
+
+                if (offeredRide.contains("200") && addToURTable.contains("200")) {
                     println("response status 200. redirecting ...")
                     navController.navigate(ListScreen.Home.name)
                 } else {

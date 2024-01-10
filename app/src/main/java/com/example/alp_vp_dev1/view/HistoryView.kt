@@ -1,33 +1,42 @@
 package com.example.alp_vp_dev1.view
 
 import android.annotation.SuppressLint
+import android.os.Build
+import android.text.format.DateUtils.formatDateTime
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.DirectionsCar
-import androidx.compose.material.icons.outlined.HelpOutline
-import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -35,30 +44,65 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.alp_vp_dev1.R
+import com.example.alp_vp_dev1.model.HistoryModel
+import com.example.alp_vp_dev1.model.RideModel
+import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.viewmodel.HistoryViewModel
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HistoryView(
+    user: User,
     historyViewModel: HistoryViewModel,
+    histories: List<HistoryModel>,
     navController: NavController
-){
+) {
+    val pages = listOf(
+        BottomNavigationItem(
+            title = "Home",
+            selectedIcon = Icons.Filled.Home,
+            unselectedIcon = Icons.Outlined.Home,
+            hasNews = false,
+        ),
+        BottomNavigationItem(
+            title = "History",
+            selectedIcon = Icons.Filled.DirectionsCar,
+            unselectedIcon = Icons.Outlined.DirectionsCar,
+            hasNews = false,
+        ),
+        BottomNavigationItem(
+            title = "Profile",
+            selectedIcon = Icons.Filled.AccountCircle,
+            unselectedIcon = Icons.Outlined.AccountCircle,
+            hasNews = false,
+        )
+    )
+
+    val selectedItemByIndex by rememberSaveable {
+        mutableStateOf(0)
+    }
+
     Scaffold(
         bottomBar = {
             NavigationBar(
@@ -74,10 +118,10 @@ fun HistoryView(
                     },
                     icon = {
                         BadgedBox(
-                            badge = {  }
+                            badge = { }
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Home,
+                                imageVector = Icons.Filled.Home,
                                 contentDescription = "Home"
                             )
                         }
@@ -89,14 +133,15 @@ fun HistoryView(
                 NavigationBarItem(
                     selected = true,
                     onClick = {
-                        navController.navigate(ListScreen.History.name)
+                        println("from home view navigating to history with user id : ${user.user_id}")
+                        navController.navigate(ListScreen.History.name + "/" + user.user_id)
                     },
                     icon = {
                         BadgedBox(
-                            badge = {  }
+                            badge = { }
                         ) {
                             Icon(
-                                imageVector = Icons.Filled.DirectionsCar,
+                                imageVector = Icons.Outlined.DirectionsCar,
                                 contentDescription = "History"
                             )
                         }
@@ -112,7 +157,7 @@ fun HistoryView(
                     },
                     icon = {
                         BadgedBox(
-                            badge = {  }
+                            badge = { }
                         ) {
                             Icon(
                                 imageVector = Icons.Outlined.AccountCircle,
@@ -126,210 +171,398 @@ fun HistoryView(
                 )
             }
         }
-    ){
-        Column{
-            Row(
-                modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "Your Ride History",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Icon(
-                    imageVector = Icons.Outlined.HelpOutline,
-                    contentDescription = "help"
-                )
-            }
-
-            LazyVerticalGrid(columns = GridCells.Fixed(1)){
-                item{
-
-                }
-            }
-        }
-    }
-    @Composable
-    fun HistoryCard() {
-        ElevatedCard(
-            modifier = Modifier.padding(18.dp),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 18.dp
-            ),
-            colors = CardDefaults.cardColors(Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp, 8.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Today, 17:00 WIB",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
-                    )
-
-                    Column {
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "L 1782 AB",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            textAlign = TextAlign.End
-                        )
-
-                        Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Suzuki Ertiga",
-                            textAlign = TextAlign.End
-                        )
-                    }
-                }
-
+            Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 5.dp)
+                        .padding(20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .padding(end = 8.dp)
-                            .size(50.dp)
-                            .fillMaxHeight()
-                            .align(Alignment.CenterVertically),
-                        painter = painterResource(id = R.drawable.baseline_directions_car_24),
-                        contentDescription = "car"
-                    )
-
-                    Image(
-                        modifier = Modifier
-                            .size(30.dp, 120.dp)
-                            .fillMaxHeight()
-                            .align(Alignment.CenterVertically),
-                        painter = painterResource(id = R.drawable.group_63),
-                        contentDescription = "arrow"
-                    )
-
-                    Column(
-                        modifier = Modifier.padding(start = 10.dp)
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .width(140.dp),
-                            text = "CitraLand CBD Boulevard, Made",
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Standby Point",
-                            fontWeight = FontWeight.Light,
-                            fontSize = 11.sp
-                        )
-
-                        Text(
-                            modifier = Modifier
-                                .width(140.dp)
-                                .padding(top = 18.dp),
-                            text = "Jl. Mayjend Jonosewojo No.2",
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Destination",
-                            fontWeight = FontWeight.Light,
-                            fontSize = 11.sp
-                        )
-                    }
-
                     Text(
                         modifier = Modifier
-                            .padding(start = 8.dp)
-                            .background(Color(0xFFBBFAB0), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 10.dp)
-                            .padding(vertical = 6.dp)
-                            .align(Alignment.Bottom),
-                        text = "Finished",
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Right
+                            .width(250.dp),
+                        text = "Where are you going today ?",
+                        lineHeight = 36.sp,
+                        fontSize = 36.sp,
+                        fontWeight = FontWeight.ExtraLight
                     )
+                    Icon(
+                        Icons.AutoMirrored.Filled.Help,
+                        "Help",
+                        Modifier.size(36.dp)
+                    )
+                }
+
+                val dateFormat = DateTimeFormatter.ofPattern("d MMMM yyyy")
+                val formattedDate = LocalDate.now().format(dateFormat)
+
+                if (user.driver.contains("1")) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .heightIn(max = 500.dp, min = 500.dp)
+                    ) {
+                        items(histories) { ride ->
+                            var newDate: String? = null
+
+                            newDate = if (ride.going_date == formattedDate) {
+                                "Today"
+                            } else {
+                                ride.going_date
+                            }
+
+                            val dateTime: String = "$newDate, ${ride.going_time}"
+
+                            HistoryCard(
+                                driver_id = ride.driver_id.toString(),
+                                user_id = ride.passanger_id.toString(),
+                                ride_id = ride.ride_id.toString(),
+                                dateTime = dateTime,
+                                standby = ride.start_location,
+                                destination = ride.destination_location,
+                                driver_status = ride.ride_status.toString(),
+                                passenger_status = ride.passenger_status,
+                                navController = navController
+                            )
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp)
+                            .heightIn(max = 600.dp, min = 600.dp)
+                    ) {
+                        items(histories) { ride ->
+                            var newDate: String? = null
+
+                            newDate = if (ride.going_date == formattedDate) {
+                                "Today"
+                            } else {
+                                ride.going_date
+                            }
+
+                            val dateTime: String = "$newDate, ${ride.going_time}"
+
+                            HistoryCard(
+                                driver_id = ride.driver_id.toString(),
+                                user_id = ride.passanger_id.toString(),
+                                ride_id = ride.ride_id.toString(),
+                                dateTime = dateTime,
+                                standby = ride.start_location,
+                                destination = ride.destination_location,
+                                driver_status = ride.ride_status.toString(),
+                                passenger_status = ride.passenger_status,
+                                navController = navController
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (user.driver.contains("1")) {
+
+                Button(
+                    modifier = Modifier
+                        .padding(20.dp, 20.dp, 20.dp, 110.dp)
+                        .height(60.dp)
+                        .fillMaxWidth(),
+                    onClick = {
+                        navController.navigate(ListScreen.OfferRide.name)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFD0FF00)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Offer Ride",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                        Spacer(Modifier.width(8.dp))  // Add horizontal spacing
+                        Icon(
+                            imageVector = Icons.Filled.ArrowForward,
+                            contentDescription = "Offer Ride Button",
+                            tint = Color.Black
+                        )
+                    }
                 }
             }
         }
     }
-    /*
-    Box(
+}
+
+@Composable
+fun HistoryCard(
+    user_id: String,
+    driver_id: String,
+    ride_id: String,
+    dateTime: String,
+    standby: String,
+    destination: String,
+    driver_status: String,
+    passenger_status: String,
+    navController: NavController
+) {
+    Card(
         modifier = Modifier
-            .fillMaxHeight()
-            .height(100.dp),
-        contentAlignment = Alignment.BottomCenter
-    ){
-        Column {
-            historyViewModel.TopShadow(alpha = .15f, height = 18.dp)
+            .fillMaxWidth()
+            .padding(6.dp)
+            .shadow(10.dp, shape = RoundedCornerShape(5.dp)),
+        colors = CardDefaults.cardColors(Color.White)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(12.dp),
+                    horizontalAlignment = CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    Text(
+                        text = dateTime,
+//                    fontFamily = inter,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .absolutePadding(top = 5.dp, left = 10.dp)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.card_car),
+                        contentDescription = "Mobil",
+                        modifier = Modifier
+                            .size(80.dp)
+                            .padding(top = 16.dp)
+                            .clip(shape = RoundedCornerShape(10.dp)),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .absolutePadding(top = 10.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.panah),
+                        contentDescription = "tujuan",
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .size(18.dp, 110.dp)
+                            .graphicsLayer(scaleY = 1f),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 10.dp, horizontal = 12.dp)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = standby,
+                            lineHeight = 15.sp,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier
+                                .padding(0.dp)
+                        )
+                        Text(
+                            text = "Standby point",
+                            lineHeight = 11.sp,
+                            fontSize = 10.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(top = 0.dp)
+                        )
+                    }
+                    Column(
+                        modifier = Modifier.padding(top = 24.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = destination,
+                            lineHeight = 15.sp,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.ExtraBold,
+                            modifier = Modifier
+                                .padding(0.dp)
+                        )
+                        Text(
+                            text = "Destination",
+                            lineHeight = 11.sp,
+                            fontSize = 10.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(top = 0.dp)
+                        )
+                    }
+                }
+            }
+
+            Divider(
+                modifier = Modifier
+                    .heightIn(2.dp)
+                    .padding(horizontal = 16.dp)
+            )
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(40.dp, 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .padding(16.dp, 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Icon(
-                        modifier = Modifier
-                            .size(30.dp)
-                            .fillMaxWidth()
-                            .align(CenterHorizontally),
-                        imageVector = Icons.Outlined.Home,
-                        contentDescription = "Home Page"
-                    )
 
-                    Text(
-                        text = "Home"
-                    )
+                if (user_id.equals(driver_id)) {
+                    if (driver_status.contains("0")) {
+                        Card(
+                            modifier = Modifier
+                                .background(
+                                    color = Color(0xFF99F5AE),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(16.dp, 5.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF99F5AE)
+                            )
+                        ) {
+                            Text(
+                                text = "Active: Standby",
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black
+                            )
+                        }
+                    } else if (driver_status.contains("1")) {
+                        Card(
+                            modifier = Modifier
+                                .background(
+                                    color = Color(0xFF99F5AE),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(16.dp, 5.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF99F5AE)
+                            )
+                        ) {
+                            Text(
+                                text = "Active: Ongoing",
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black
+                            )
+                        }
+                    } else if (driver_status.contains("2")) {
+                        Card(
+                            modifier = Modifier
+                                .background(
+                                    color = Color(0xFF99F5AE),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(16.dp, 5.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF99F5AE)
+                            )
+                        ) {
+                            Text(
+                                text = "Finished",
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black
+                            )
+                        }
+                    }
+                } else {
+                    if (driver_status.contains("0")) {
+                        Card(
+                            modifier = Modifier
+                                .background(
+                                    color = Color(0xFFADD7E8),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(16.dp, 5.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFADD7E8)
+                            )
+                        ) {
+                            Text(
+                                text = "Standby",
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black
+                            )
+                        }
+                    } else if (driver_status.contains("1")) {
+                        Card(
+                            modifier = Modifier
+                                .background(
+                                    color = Color(0xFFFFA7A6),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(16.dp, 5.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFFFA7A6)
+                            )
+                        ) {
+                            Text(
+                                text = "Ongoing",
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black
+                            )
+                        }
+                    } else if (driver_status.contains("2")) {
+                        Card(
+                            modifier = Modifier
+                                .background(
+                                    color = Color(0xFF99F5AE),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(16.dp, 5.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF99F5AE)
+                            )
+                        ) {
+                            Text(
+                                text = "Finished",
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black
+                            )
+                        }
+                    }
                 }
 
-                Column {
-                    Icon(
-                        modifier = Modifier
-                            .size(30.dp)
-                            .fillMaxWidth()
-                            .align(CenterHorizontally),
-                        imageVector = Icons.Outlined.History,
-                        contentDescription = "History"
-                    )
 
+
+
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFD0FF00)
+                    ),
+                    onClick = { navController.navigate(ListScreen.RideDetails.name + "/" + ride_id) }
+                ) {
                     Text(
-                        text = "History"
-                    )
-                }
-
-                Column {
-                    Icon(
-                        modifier = Modifier
-                            .size(30.dp)
-                            .fillMaxWidth()
-                            .align(CenterHorizontally),
-                        imageVector = Icons.Outlined.AccountCircle,
-                        contentDescription = "Account"
-                    )
-
-                    Text(
-                        text = "Account"
+                        text = "Details",
+                        color = Color.Black,
+                        fontWeight = FontWeight.ExtraBold
                     )
                 }
             }
         }
-    }*/
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun HistoryPreview(){
-    //HistoryView()
+    }
 }

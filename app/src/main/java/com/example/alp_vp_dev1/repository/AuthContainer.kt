@@ -11,7 +11,7 @@ class AuthContainer {
         val ACCESS_TOKEN = ""
     }
 
-    private val BASE_URL = "http://192.168.18.11:8080/api/"
+    private val BASE_URL = "https://7168-36-90-48-14.ngrok-free.app/api/"
 
     private val client = OkHttpClient.Builder()
         .hostnameVerifier { _, _ -> true }

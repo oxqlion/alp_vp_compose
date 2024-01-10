@@ -33,12 +33,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.alp_vp_dev1.R
+import com.example.alp_vp_dev1.model.HistoryModel
 import com.example.alp_vp_dev1.model.RideModel
 import com.example.alp_vp_dev1.repository.RideContainer
 import kotlinx.coroutines.launch
 
 sealed interface HistoryUIState {
-    data class Success(val data: List<RideModel>) : HistoryUIState
+    data class Success(val data: List<HistoryModel>) : HistoryUIState
     object Error : HistoryUIState
     object Loading : HistoryUIState
 }
@@ -48,17 +49,39 @@ class HistoryViewModel: ViewModel() {
     var historyUIState: HistoryUIState by mutableStateOf(HistoryUIState.Loading)
         private set
 
-    private lateinit var data: List<RideModel>
+    private lateinit var data: List<HistoryModel>
+    private var dataRides: List<RideModel>? = null
+
+
+    fun loadRides(): List<RideModel>? {
+        viewModelScope.launch {
+            try {
+                println("masuk ke load ride viwemodel try")
+                dataRides = RideContainer().rideRepositories.rides()
+                return@launch
+            } catch (e: Exception) {
+                println("in status success homeviewmodel")
+                println("load rides home viewmodel error : ${e.message}")
+            }
+        }
+        println("loadirdes di historyviewmodel data nya ini : $dataRides")
+        return dataRides
+    }
 
     fun userRides(userId: Int) {
         viewModelScope.launch {
             try {
-                println("masuk ke load ride viwemodel try")
+                println("masuk ke load history viwemodel try")
                 data = RideContainer().rideRepositories.userRides(userId)
-                historyUIState = HistoryUIState.Success(data)
+                println("di view model data nyaa : $data")
+                if (!data.isEmpty()) {
+                    historyUIState = HistoryUIState.Success(data)
+                } else {
+                    throw Exception(data.toString())
+                }
             } catch (e: Exception) {
-                println("in status success homeviewmodel")
-                println("load rides home viewmodel error : ${e.message}")
+                println("in status success historyviewmodel")
+                println("load rides history viewmodel error : ${e.message}")
                 historyUIState = HistoryUIState.Error
             }
         }

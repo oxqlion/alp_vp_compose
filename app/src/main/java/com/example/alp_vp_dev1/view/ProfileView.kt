@@ -36,12 +36,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.alp_vp_dev1.data.DataStoreManager
+import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ProfileView(
+    user: User,
     navController: NavController,
     dataStore: DataStoreManager,
     profileViewModel: ProfileViewModel
@@ -102,7 +104,7 @@ fun ProfileView(
                 NavigationBarItem(
                     selected = false,
                     onClick = {
-                        navController.navigate(ListScreen.History.name)
+                        navController.navigate(ListScreen.History.name + "/" + user.user_id)
                     },
                     icon = {
                         BadgedBox(
