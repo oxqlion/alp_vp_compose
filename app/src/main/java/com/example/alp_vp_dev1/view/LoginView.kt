@@ -1,14 +1,19 @@
 package com.example.alp_vp_dev1.view
 
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -33,8 +38,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -42,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.alp_vp_dev1.R
 import com.example.alp_vp_dev1.data.DataStoreManager
 import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.ui.theme.DarkGrey
@@ -91,7 +101,7 @@ fun LoginView(
                         Text(text = "Email")
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        unfocusedBorderColor = Color(0xFF333138),
+                        unfocusedBorderColor = Color(0xFFD0FF00),
                         focusedBorderColor = Color(0xFFD0FF00)
                     ),
                     shape = RoundedCornerShape(12.dp)
@@ -110,25 +120,58 @@ fun LoginView(
                     isPasswordValid = isPasswordValid
                 )
 
-                Button(onClick = {
+                Button(
+                    onClick = {
+                        val user = User(
+                            email = email,
+                            password = password
+                        )
+                        loginViewModel.Login(user, navController, dataStore)
+                        Log.d("haloo", "mas")
+                    },
+                    colors = ButtonDefaults.buttonColors(Color(0xFFD0FF00)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
+                        .height(50.dp)
+                ) {
+                    Text(
+                        text = "Login",
+                        color = Color.Black
+                    )
+                }
 
-                    val user = User(
-                        email = email,
-                        password = password
+                Text(
+                    modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
+                    text = "Atau login dengan",
+                    color = Color.Gray,
+                    fontSize = 12.sp
+                )
+
+                Image(
+                    painter = painterResource(id = R.drawable.screenshot_2024_01_10_082230),
+                    contentDescription = "more login option",
+                    Modifier.width(300.dp),
+                    contentScale = ContentScale.FillWidth
+                )
+
+                Row{
+                    Text(
+                        modifier = Modifier.padding(top = 24.dp),
+                        text = "Belum memiliki akun?",
+                        fontSize = 13.sp
                     )
 
-                    loginViewModel.Login(user, navController, dataStore)
-                    Log.d("haloo", "mas")
-                }) {
-                    Text(text = "Login")
+                    TextButton(onClick = {
+                        navController.navigate(ListScreen.Register.name)
+                    }) {
+                        Text(
+                            modifier = Modifier.padding(top = 18.dp),
+                            text = "Register",
+                            color = Color(0xFFD0FF00)
+                        )
+                    }
                 }
-
-                Button(onClick = {
-                    navController.navigate(ListScreen.Register.name)
-                }) {
-                    Text(text = "Create Account")
-                }
-
             }
         }
     )
@@ -153,6 +196,10 @@ fun CustomPasswordField(
         label = { Text(text = text) },
         keyboardOptions = keyboardOptions,
         shape = RoundedCornerShape(12.dp),
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFFD0FF00),
+            unfocusedBorderColor = Color(0xFFD0FF00)
+        ),
         modifier = modifier,
         isError = !isPasswordValid,
         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),

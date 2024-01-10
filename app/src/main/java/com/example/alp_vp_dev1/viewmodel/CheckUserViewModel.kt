@@ -8,6 +8,7 @@ import com.example.alp_vp_dev1.model.User
 import com.example.alp_vp_dev1.repository.AuthContainer
 import com.example.alp_vp_dev1.view.ListScreen
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class CheckUserViewModel() : ViewModel() {
@@ -22,7 +23,13 @@ class CheckUserViewModel() : ViewModel() {
         viewModelScope.launch {
             println("mencoba menjalankan launc di check user viewmodel")
 
-            dataStoreInUser = dataStore.getUser.first()!!
+//            dataStoreInUser = dataStore.getUser.first()!!
+
+            dataStore.getUser.firstOrNull()?.let { user ->
+                dataStoreInUser = user
+            } ?: run {
+                println("No user found in DataStore")
+            }
 
             var userObj: User? = null
 
